@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: trading-master-api
+    env: python
+    plan: free
+    rootDir: trading_master_backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: APP_TIMEZONE
+        value: Asia/Dhaka
+      - key: ADMIN_TOKEN
+        sync: false
+      - key: TWELVEDATA_API_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false

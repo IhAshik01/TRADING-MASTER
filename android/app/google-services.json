@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "856929849255",
+    "project_id": "trading-master-5474a",
+    "storage_bucket": "trading-master-5474a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:856929849255:android:ef9cc4745883d257983082",
+        "android_client_info": {
+          "package_name": "com.example.trading_master"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "856929849255-5egc11bq4vhus39aa3p2jtcmvs1o78e1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.trading_master",
+            "certificate_hash": "5414acaf2a6cebcd40523824c950f35ba3e42fb3"
+          }
+        },
+        {
+          "client_id": "856929849255-20giu60takai0e9q2ttdlmobe41bqt34.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAUTPxXsdn1C4z7ivVdQc3yodMrbMfaKgU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "856929849255-20giu60takai0e9q2ttdlmobe41bqt34.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

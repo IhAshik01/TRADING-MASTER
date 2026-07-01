@@ -1,0 +1,4 @@
+symbol,label,profit_1m,profit_5m,change,price
+EURUSD_otc,EUR/USD (OTC),92,90,0.14,1.08452
+GBPUSD_otc,GBP/USD (OTC),88,87,-0.09,1.27125
+USDBRL_otc,USD/BRL (OTC),91,93,0.42,5.42310

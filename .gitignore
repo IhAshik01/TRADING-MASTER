@@ -1,0 +1,33 @@
+# Flutter
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+
+# Android
+.gradle/
+local.properties
+*.keystore
+*.jks
+*.apk
+*.aab
+
+# Python Backend
+trading_master_backend/venv/
+trading_master_backend/__pycache__/
+trading_master_backend/.env
+trading_master_backend/*.log
+trading_master_backend/*.csv
+trading_master_backend/*.json
+!trading_master_backend/runtime.txt
+!trading_master_backend/requirements.txt
+
+# Secrets & OS
+.env
+.DS_Store
+.idea/
+.vscode/
+*.bak

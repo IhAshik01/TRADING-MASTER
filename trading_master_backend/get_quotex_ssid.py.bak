@@ -1,0 +1,164 @@
+import os
+import sys
+import asyncio
+import inspect
+from pathlib import Path
+from dotenv import load_dotenv
+
+if sys.platform.startswith("win"):
+    try:
+        asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
+    except Exception:
+        pass
+
+from api_quotex import get_ssid
+
+ENV_PATH = Path(".env")
+
+load_dotenv()
+
+email = os.getenv("QUOTEX_EMAIL")
+password = os.getenv("QUOTEX_PASSWORD")
+is_demo = os.getenv("QUOTEX_IS_DEMO", "true").lower() == "true"
+
+if not email or not password:
+    print("Missing QUOTEX_EMAIL or QUOTEX_PASSWORD in .env")
+    raise SystemExit
+
+
+def extract_ssid(result):
+    """
+    Handles possible API-Quotex return formats:
+    1. {"demo": "...", "live": "..."}
+    2. (True, {"ssid": "...", "token": "...", "is_demo": True})
+    3. "ssid string"
+    """
+
+    if isinstance(result, str):
+        return result
+
+    if isinstance(result, dict):
+        # Common README format
+        if is_demo and result.get("demo"):
+            return result.get("demo")
+
+        if not is_demo and result.get("live"):
+            return result.get("live")
+
+        # Session-data format
+        if result.get("ssid"):
+            return result.get("ssid")
+
+        # If only token exists, construct authorization packet
+        token = result.get("token")
+        if token:
+            demo_flag = 1 if is_demo else 0
+            return f'42["authorization",{{"session":"{token}","isDemo":{demo_flag},"tournamentId":0}}]'
+
+    if isinstance(result, tuple) and len(result) >= 2:
+        success = result[0]
+        data = result[1]
+
+        if not success:
+            raise Exception("get_ssid returned success=False")
+
+        if isinstance(data, dict):
+            if data.get("ssid"):
+                return data.get("ssid")
+
+            token = data.get("token")
+            if token:
+                demo_flag = 1 if data.get("is_demo", is_demo) else 0
+                return f'42["authorization",{{"session":"{token}","isDemo":{demo_flag},"tournamentId":0}}]'
+
+    return None
+
+
+def quote_env_value(value: str) -> str:
+    # Use single quotes because SSID contains double quotes.
+    safe = value.replace("\\", "\\\\").replace("'", "\\'")
+    return f"'{safe}'"
+
+
+def upsert_env(key: str, value: str):
+    lines = []
+
+    if ENV_PATH.exists():
+        lines = ENV_PATH.read_text(encoding="utf-8").splitlines()
+
+    new_line = f"{key}={quote_env_value(value)}"
+
+    updated = False
+    output = []
+
+    for line in lines:
+        if line.strip().startswith(f"{key}="):
+            output.append(new_line)
+            updated = True
+        else:
+            output.append(line)
+
+    if not updated:
+        output.append(new_line)
+
+    ENV_PATH.write_text("\n".join(output) + "\n", encoding="utf-8")
+
+
+print("Getting Quotex SSID...")
+print("A browser may open. Complete login if needed.")
+
+try:
+    result = get_ssid(email=email, password=password)
+except TypeError:
+    result = get_ssid(email, password)
+
+if inspect.isawaitable(result):
+    result = asyncio.run(result)
+
+# EXTRACT ONLY THE SESSION ID (TOKEN)
+ssid = None
+if isinstance(result, dict):
+    ssid = result.get("session") or result.get("token") or result.get("ssid")
+    if not ssid and is_demo and result.get("demo"):
+        # If it's a full packet, try to extract the session part
+        try:
+            import json
+            packet = result.get("demo")
+            if packet.startswith('42['):
+                data = json.loads(packet[2:])[1]
+                ssid = data.get("session")
+        except: pass
+elif isinstance(result, tuple) and len(result) >= 2:
+    data = result[1]
+    if isinstance(data, dict):
+        ssid = data.get("session") or data.get("token") or data.get("ssid")
+
+if not ssid:
+    # Final fallback: just use the result if it looks like a token
+    if isinstance(result, str) and len(result) > 20:
+        ssid = result
+
+if not ssid:
+    print("Could not extract Session Token.")
+    raise SystemExit
+
+# Save BARE token without manual single quotes to let dotenv handle it
+env_key = "QUOTEX_SSID_DEMO" if is_demo else "QUOTEX_SSID_LIVE"
+lines = []
+if ENV_PATH.exists():
+    lines = ENV_PATH.read_text(encoding="utf-8").splitlines()
+
+new_line = f"{env_key}={ssid}"
+updated = False
+output = []
+for line in lines:
+    if line.strip().startswith(f"{env_key}="):
+        output.append(new_line)
+        updated = True
+    else: output.append(line)
+if not updated: output.append(new_line)
+ENV_PATH.write_text("\n".join(output) + "\n", encoding="utf-8")
+
+print(f"Saved {env_key} to .env")
+print(f"Token: {ssid[:5]}...{ssid[-5:]}")
+print("Done. Now restart your backend.")

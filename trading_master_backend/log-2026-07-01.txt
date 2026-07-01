@@ -1,0 +1,609 @@
+2026-07-01 09:49:16.189 | INFO     | api_quotex.config:_load_config:103 - Configuration loaded from config.json
+2026-07-01 09:49:16.191 | INFO     | api_quotex.config:_load_session:139 - Session data loaded from session.json
+2026-07-01 09:49:16.191 | INFO     | api_quotex.config:__init__:78 - Config instance initialized successfully
+2026-07-01 09:49:16.628 | INFO     | api_quotex.login:get_ssid:284 - Checking existing saved session...
+2026-07-01 09:49:16.720 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 09:49:17.440 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 09:49:17.870 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 09:49:17.870 | INFO     | api_quotex.websocket_client:disconnect:216 - Disconnecting from WebSocket
+2026-07-01 09:49:18.246 | INFO     | api_quotex.login:validate_ssid:115 - SSID validated successfully using wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 09:49:18.246 | INFO     | api_quotex.login:get_ssid:294 - Existing session is valid.
+2026-07-01 09:52:28.862 | INFO     | api_quotex.config:_load_config:103 - Configuration loaded from config.json
+2026-07-01 09:52:28.877 | INFO     | api_quotex.config:_load_session:139 - Session data loaded from session.json
+2026-07-01 09:52:28.877 | INFO     | api_quotex.config:__init__:78 - Config instance initialized successfully
+2026-07-01 09:52:29.116 | INFO     | api_quotex.client:__init__:151 - Initialized Quotex client (demo=True, persistent=False) with enhanced monitoring
+2026-07-01 09:52:29.116 | INFO     | api_quotex.client:connect:181 - Connecting to Quotex...
+2026-07-01 09:52:29.116 | INFO     | api_quotex.client:_start_regular_connection:206 - Starting regular connection...
+2026-07-01 09:52:29.116 | INFO     | api_quotex.client:_start_regular_connection:212 - Demo mode: Using demo regions: ['DEMO', 'LIVE']
+2026-07-01 09:52:29.128 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: DEMO with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 09:52:29.128 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 09:52:29.740 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 09:52:30.197 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 09:52:30.197 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 09:52:30.197 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: DEMO
+2026-07-01 09:52:30.466 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 09:52:30.470 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 09:52:30.470 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 09:52:30.470 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 09:52:30.470 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 09:52:32.273 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 09:52:32.273 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 09:52:32.273 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 09:52:32.273 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 09:52:35.509 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 09:53:00.259 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 09:53:00.259 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region DEMO: Authentication timeout
+2026-07-01 09:53:00.259 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to DEMO: Authentication timeout
+2026-07-01 09:53:00.259 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 1.80 seconds before next reconnect attempt
+2026-07-01 09:53:02.093 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: LIVE with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 09:53:02.093 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 09:53:02.675 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 09:53:03.117 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 09:53:03.117 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 09:53:03.117 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: LIVE
+2026-07-01 09:53:03.397 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 09:53:03.398 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 09:53:03.398 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 09:53:03.398 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 09:53:03.398 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 09:53:05.223 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 09:53:05.223 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 09:53:05.223 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 09:53:05.223 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 09:53:08.463 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 09:53:33.219 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 09:53:33.219 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region LIVE: Authentication timeout
+2026-07-01 09:53:33.219 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to LIVE: Authentication timeout
+2026-07-01 09:53:33.219 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 3.24 seconds before next reconnect attempt
+2026-07-01 09:53:36.458 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Failed to connect to any region after 2 attempts (Code: None)
+2026-07-01 09:53:36.458 | ERROR    | api_quotex.client:connect:195 - Connection failed: Failed to connect to any region after 2 attempts
+2026-07-01 09:53:36.458 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Connection failed: Failed to connect to any region after 2 attempts
+2026-07-01 09:56:03.405 | INFO     | api_quotex.config:_load_config:103 - Configuration loaded from config.json
+2026-07-01 09:56:03.405 | INFO     | api_quotex.config:_load_session:139 - Session data loaded from session.json
+2026-07-01 09:56:03.405 | INFO     | api_quotex.config:__init__:78 - Config instance initialized successfully
+2026-07-01 09:56:03.640 | INFO     | api_quotex.client:__init__:151 - Initialized Quotex client (demo=True, persistent=False) with enhanced monitoring
+2026-07-01 09:56:03.640 | INFO     | api_quotex.client:connect:181 - Connecting to Quotex...
+2026-07-01 09:56:03.640 | INFO     | api_quotex.client:_start_regular_connection:206 - Starting regular connection...
+2026-07-01 09:56:03.640 | INFO     | api_quotex.client:_start_regular_connection:212 - Demo mode: Using demo regions: ['DEMO', 'LIVE']
+2026-07-01 09:56:03.873 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: DEMO with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 09:56:03.873 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 09:56:04.489 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 09:56:04.943 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 09:56:04.943 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 09:56:04.943 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: DEMO
+2026-07-01 09:56:05.222 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 09:56:05.222 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 09:56:05.222 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 09:56:05.222 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 09:56:05.222 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 09:56:07.016 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 09:56:07.016 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 09:56:07.016 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 09:56:07.016 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 09:56:10.258 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 09:56:34.977 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 09:56:34.977 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region DEMO: Authentication timeout
+2026-07-01 09:56:34.977 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to DEMO: Authentication timeout
+2026-07-01 09:56:34.977 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 1.80 seconds before next reconnect attempt
+2026-07-01 09:56:36.786 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: LIVE with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 09:56:36.786 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 09:56:37.400 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 09:56:37.844 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 09:56:37.844 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 09:56:37.844 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: LIVE
+2026-07-01 09:56:38.124 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 09:56:38.124 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 09:56:38.124 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 09:56:38.124 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 09:56:38.124 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 09:56:39.940 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 09:56:39.940 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 09:56:39.940 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 09:56:39.940 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 09:56:43.192 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 09:57:07.870 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 09:57:07.870 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region LIVE: Authentication timeout
+2026-07-01 09:57:07.870 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to LIVE: Authentication timeout
+2026-07-01 09:57:07.870 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 3.24 seconds before next reconnect attempt
+2026-07-01 09:57:11.130 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Failed to connect to any region after 2 attempts (Code: None)
+2026-07-01 09:57:11.130 | ERROR    | api_quotex.client:connect:195 - Connection failed: Failed to connect to any region after 2 attempts
+2026-07-01 09:57:11.130 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Connection failed: Failed to connect to any region after 2 attempts
+2026-07-01 09:57:33.065 | INFO     | api_quotex.config:_load_config:103 - Configuration loaded from config.json
+2026-07-01 09:57:33.065 | INFO     | api_quotex.config:_load_session:139 - Session data loaded from session.json
+2026-07-01 09:57:33.065 | INFO     | api_quotex.config:__init__:78 - Config instance initialized successfully
+2026-07-01 09:57:42.504 | INFO     | api_quotex.config:_load_config:103 - Configuration loaded from config.json
+2026-07-01 09:57:42.504 | INFO     | api_quotex.config:_load_session:139 - Session data loaded from session.json
+2026-07-01 09:57:42.504 | INFO     | api_quotex.config:__init__:78 - Config instance initialized successfully
+2026-07-01 09:57:42.711 | INFO     | api_quotex.login:get_ssid:284 - Checking existing saved session...
+2026-07-01 09:57:42.731 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 09:57:43.393 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 09:57:43.844 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 09:57:43.844 | INFO     | api_quotex.websocket_client:disconnect:216 - Disconnecting from WebSocket
+2026-07-01 09:57:44.249 | INFO     | api_quotex.login:validate_ssid:115 - SSID validated successfully using wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 09:57:44.249 | INFO     | api_quotex.login:get_ssid:294 - Existing session is valid.
+2026-07-01 09:58:19.435 | INFO     | api_quotex.config:_load_config:103 - Configuration loaded from config.json
+2026-07-01 09:58:19.435 | INFO     | api_quotex.config:_load_session:139 - Session data loaded from session.json
+2026-07-01 09:58:19.435 | INFO     | api_quotex.config:__init__:78 - Config instance initialized successfully
+2026-07-01 09:58:19.650 | INFO     | api_quotex.login:get_ssid:284 - Checking existing saved session...
+2026-07-01 09:58:19.662 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 09:58:20.304 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 09:58:20.770 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 09:58:20.770 | INFO     | api_quotex.websocket_client:disconnect:216 - Disconnecting from WebSocket
+2026-07-01 09:58:21.163 | INFO     | api_quotex.login:validate_ssid:115 - SSID validated successfully using wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 09:58:21.163 | INFO     | api_quotex.login:get_ssid:294 - Existing session is valid.
+2026-07-01 10:01:03.021 | INFO     | api_quotex.config:_load_config:103 - Configuration loaded from config.json
+2026-07-01 10:01:03.022 | INFO     | api_quotex.config:_load_session:139 - Session data loaded from session.json
+2026-07-01 10:01:03.022 | INFO     | api_quotex.config:__init__:78 - Config instance initialized successfully
+2026-07-01 10:01:03.275 | INFO     | api_quotex.client:__init__:151 - Initialized Quotex client (demo=True, persistent=False) with enhanced monitoring
+2026-07-01 10:01:03.275 | INFO     | api_quotex.client:connect:181 - Connecting to Quotex...
+2026-07-01 10:01:03.275 | INFO     | api_quotex.client:_start_regular_connection:206 - Starting regular connection...
+2026-07-01 10:01:03.275 | INFO     | api_quotex.client:_start_regular_connection:212 - Demo mode: Using demo regions: ['DEMO', 'LIVE']
+2026-07-01 10:01:03.287 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: DEMO with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:01:03.287 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:01:03.896 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 10:01:04.348 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 10:01:04.348 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 10:01:04.348 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: DEMO
+2026-07-01 10:01:04.626 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 10:01:04.626 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 10:01:04.626 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 10:01:04.626 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:01:04.626 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 10:01:06.438 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 10:01:06.438 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 10:01:06.438 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:01:06.438 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 10:01:09.681 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 10:01:34.366 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 10:01:34.366 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region DEMO: Authentication timeout
+2026-07-01 10:01:34.366 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to DEMO: Authentication timeout
+2026-07-01 10:01:34.366 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 1.80 seconds before next reconnect attempt
+2026-07-01 10:01:36.584 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: LIVE with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:01:36.584 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:01:37.172 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 10:01:37.629 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 10:01:37.629 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 10:01:37.629 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: LIVE
+2026-07-01 10:01:37.920 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 10:01:37.920 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 10:01:37.925 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 10:01:37.925 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:01:37.925 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 10:01:39.722 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 10:01:39.722 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 10:01:39.722 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:01:39.722 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 10:01:42.960 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 10:02:07.719 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 10:02:07.719 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region LIVE: Authentication timeout
+2026-07-01 10:02:07.719 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to LIVE: Authentication timeout
+2026-07-01 10:02:07.719 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 3.24 seconds before next reconnect attempt
+2026-07-01 10:02:10.948 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Failed to connect to any region after 2 attempts (Code: None)
+2026-07-01 10:02:10.948 | ERROR    | api_quotex.client:connect:195 - Connection failed: Failed to connect to any region after 2 attempts
+2026-07-01 10:02:10.948 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Connection failed: Failed to connect to any region after 2 attempts
+2026-07-01 10:03:52.538 | INFO     | api_quotex.config:_load_config:103 - Configuration loaded from config.json
+2026-07-01 10:03:52.538 | WARNING  | api_quotex.config:_load_session:141 - session.json not found, using default session data
+2026-07-01 10:03:52.538 | INFO     | api_quotex.config:__init__:78 - Config instance initialized successfully
+2026-07-01 10:03:53.964 | INFO     | api_quotex.login:get_ssid:324 - Submitting login form via Cloudscraper with CSRF
+2026-07-01 10:03:55.843 | WARNING  | api_quotex.login:get_ssid:371 - Cloudscraper: neither session cookie nor token found; switching to Playwright
+2026-07-01 10:04:01.696 | INFO     | api_quotex.login:_playwright_login_and_capture:154 - Playwright: opening login page...
+2026-07-01 10:04:35.180 | WARNING  | api_quotex.login:_playwright_login_and_capture:212 - Playwright: logged in but no session cookie or token found.
+2026-07-01 10:04:35.188 | INFO     | api_quotex.config:save_session:181 - Session data saved to session.json
+2026-07-01 10:04:35.188 | INFO     | api_quotex.login:_playwright_login_and_capture:214 - Playwright: session data saved successfully
+2026-07-01 10:04:35.681 | ERROR    | api_quotex.monitoring:record_error:175 - [CRITICAL] authentication: Unable to retrieve a valid SSID via Cloudscraper or Playwright.
+2026-07-01 10:32:13.806 | INFO     | api_quotex.client:__init__:151 - Initialized Quotex client (demo=True, persistent=False) with enhanced monitoring
+2026-07-01 10:32:13.807 | INFO     | api_quotex.client:connect:181 - Connecting to Quotex...
+2026-07-01 10:32:13.807 | INFO     | api_quotex.client:_start_regular_connection:206 - Starting regular connection...
+2026-07-01 10:32:13.808 | INFO     | api_quotex.client:_start_regular_connection:212 - Demo mode: Using demo regions: ['DEMO', 'LIVE']
+2026-07-01 10:32:13.938 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: DEMO with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:32:13.939 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:32:14.715 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 10:32:15.225 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 10:32:15.226 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 10:32:15.227 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: DEMO
+2026-07-01 10:32:15.485 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 10:32:15.486 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 10:32:15.487 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 10:32:15.487 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:32:15.487 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 10:32:17.295 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 10:32:17.296 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 10:32:17.296 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:32:17.296 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 10:32:20.533 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 10:32:21.040 | INFO     | api_quotex.client:__init__:151 - Initialized Quotex client (demo=True, persistent=False) with enhanced monitoring
+2026-07-01 10:32:21.040 | INFO     | api_quotex.client:connect:181 - Connecting to Quotex...
+2026-07-01 10:32:21.040 | INFO     | api_quotex.client:_start_regular_connection:206 - Starting regular connection...
+2026-07-01 10:32:21.041 | INFO     | api_quotex.client:_start_regular_connection:212 - Demo mode: Using demo regions: ['DEMO', 'LIVE']
+2026-07-01 10:32:21.043 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: DEMO with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:32:21.043 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:32:22.086 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 10:32:22.600 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 10:32:22.600 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 10:32:22.602 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: DEMO
+2026-07-01 10:32:22.826 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 10:32:22.827 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 10:32:22.828 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 10:32:22.828 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:32:22.828 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 10:32:24.643 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 10:32:24.644 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 10:32:24.644 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:32:24.645 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 10:32:27.870 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 10:32:45.228 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 10:32:45.229 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region DEMO: Authentication timeout
+2026-07-01 10:32:45.230 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to DEMO: Authentication timeout
+2026-07-01 10:32:45.230 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 1.80 seconds before next reconnect attempt
+2026-07-01 10:32:47.061 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: LIVE with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:32:47.061 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:32:47.788 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 10:32:48.302 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 10:32:48.302 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 10:32:48.303 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: LIVE
+2026-07-01 10:32:48.517 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 10:32:48.518 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 10:32:48.518 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 10:32:48.519 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:32:48.519 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 10:32:50.313 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 10:32:50.315 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 10:32:50.315 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:32:50.316 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 10:32:52.679 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 10:32:52.680 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region DEMO: Authentication timeout
+2026-07-01 10:32:52.680 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to DEMO: Authentication timeout
+2026-07-01 10:32:52.681 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 1.80 seconds before next reconnect attempt
+2026-07-01 10:32:53.559 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 10:32:54.505 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: LIVE with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:32:54.505 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:32:55.264 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 10:32:55.776 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 10:32:55.776 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 10:32:55.777 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: LIVE
+2026-07-01 10:32:55.978 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 10:32:55.980 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 10:32:55.980 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 10:32:55.980 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:32:55.981 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 10:32:57.802 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 10:32:57.803 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 10:32:57.803 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:32:57.804 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 10:33:01.069 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 10:33:11.761 | INFO     | api_quotex.client:__init__:151 - Initialized Quotex client (demo=True, persistent=False) with enhanced monitoring
+2026-07-01 10:33:11.761 | INFO     | api_quotex.client:connect:181 - Connecting to Quotex...
+2026-07-01 10:33:11.761 | INFO     | api_quotex.client:_start_regular_connection:206 - Starting regular connection...
+2026-07-01 10:33:11.761 | INFO     | api_quotex.client:_start_regular_connection:212 - Demo mode: Using demo regions: ['DEMO', 'LIVE']
+2026-07-01 10:33:11.790 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: DEMO with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:33:11.790 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:33:12.452 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 10:33:12.975 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 10:33:12.975 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 10:33:12.975 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: DEMO
+2026-07-01 10:33:13.210 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 10:33:13.212 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 10:33:13.212 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 10:33:13.212 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:33:13.212 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 10:33:15.034 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 10:33:15.034 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 10:33:15.034 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:33:15.034 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 10:33:18.283 | CRITICAL | api_quotex.monitoring:_trigger_alert:198 - ALERT: High error rate for websocket_reconnect_attempt: 10 errors in 300s
+2026-07-01 10:33:18.283 | CRITICAL | api_quotex.monitoring:default_alert_handler:348 - ALERT: websocket_reconnect_attempt - 10 errors
+2026-07-01 10:33:18.283 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 10:33:18.315 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 10:33:18.315 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region LIVE: Authentication timeout
+2026-07-01 10:33:18.315 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to LIVE: Authentication timeout
+2026-07-01 10:33:18.315 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 3.24 seconds before next reconnect attempt
+2026-07-01 10:33:21.550 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Failed to connect to any region after 2 attempts (Code: None)
+2026-07-01 10:33:21.550 | ERROR    | api_quotex.client:connect:195 - Connection failed: Failed to connect to any region after 2 attempts
+2026-07-01 10:33:21.550 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Connection failed: Failed to connect to any region after 2 attempts
+2026-07-01 10:33:25.863 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 10:33:25.863 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region LIVE: Authentication timeout
+2026-07-01 10:33:25.863 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to LIVE: Authentication timeout
+2026-07-01 10:33:25.863 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 3.24 seconds before next reconnect attempt
+2026-07-01 10:33:29.110 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Failed to connect to any region after 2 attempts (Code: None)
+2026-07-01 10:33:29.110 | ERROR    | api_quotex.client:connect:195 - Connection failed: Failed to connect to any region after 2 attempts
+2026-07-01 10:33:29.110 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Connection failed: Failed to connect to any region after 2 attempts
+2026-07-01 10:33:43.059 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 10:33:43.059 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region DEMO: Authentication timeout
+2026-07-01 10:33:43.059 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to DEMO: Authentication timeout
+2026-07-01 10:33:43.059 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 1.80 seconds before next reconnect attempt
+2026-07-01 10:33:44.898 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: LIVE with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:33:44.898 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:33:45.533 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 10:33:46.054 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 10:33:46.054 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 10:33:46.056 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: LIVE
+2026-07-01 10:33:46.263 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 10:33:46.265 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 10:33:46.265 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 10:33:46.265 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:33:46.265 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 10:33:48.080 | CRITICAL | api_quotex.monitoring:_trigger_alert:198 - ALERT: High error rate for websocket_reconnect_attempt: 11 errors in 300s
+2026-07-01 10:33:48.080 | CRITICAL | api_quotex.monitoring:default_alert_handler:348 - ALERT: websocket_reconnect_attempt - 11 errors
+2026-07-01 10:33:48.080 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 10:33:48.080 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 10:33:48.080 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:33:48.080 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 10:33:51.334 | CRITICAL | api_quotex.monitoring:_trigger_alert:198 - ALERT: High error rate for websocket_reconnect_attempt: 12 errors in 300s
+2026-07-01 10:33:51.334 | CRITICAL | api_quotex.monitoring:default_alert_handler:348 - ALERT: websocket_reconnect_attempt - 12 errors
+2026-07-01 10:33:51.334 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 10:34:16.109 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 10:34:16.110 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region LIVE: Authentication timeout
+2026-07-01 10:34:16.110 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to LIVE: Authentication timeout
+2026-07-01 10:34:16.110 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 3.24 seconds before next reconnect attempt
+2026-07-01 10:34:19.355 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Failed to connect to any region after 2 attempts (Code: None)
+2026-07-01 10:34:19.355 | ERROR    | api_quotex.client:connect:195 - Connection failed: Failed to connect to any region after 2 attempts
+2026-07-01 10:34:19.356 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Connection failed: Failed to connect to any region after 2 attempts
+2026-07-01 10:35:50.545 | INFO     | api_quotex.client:__init__:151 - Initialized Quotex client (demo=True, persistent=False) with enhanced monitoring
+2026-07-01 10:35:50.545 | INFO     | api_quotex.client:connect:181 - Connecting to Quotex...
+2026-07-01 10:35:50.545 | INFO     | api_quotex.client:_start_regular_connection:206 - Starting regular connection...
+2026-07-01 10:35:50.545 | INFO     | api_quotex.client:_start_regular_connection:212 - Demo mode: Using demo regions: ['DEMO', 'LIVE']
+2026-07-01 10:35:50.546 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: DEMO with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:35:50.546 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:35:51.158 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 10:35:51.697 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 10:35:51.697 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 10:35:51.697 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: DEMO
+2026-07-01 10:35:51.870 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 10:35:51.870 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 10:35:51.870 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 10:35:51.870 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:35:51.870 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 10:35:53.686 | CRITICAL | api_quotex.monitoring:_trigger_alert:198 - ALERT: High error rate for websocket_reconnect_attempt: 13 errors in 300s
+2026-07-01 10:35:53.686 | CRITICAL | api_quotex.monitoring:default_alert_handler:348 - ALERT: websocket_reconnect_attempt - 13 errors
+2026-07-01 10:35:53.686 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 10:35:53.686 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 10:35:53.686 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:35:53.686 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 10:35:56.922 | CRITICAL | api_quotex.monitoring:_trigger_alert:198 - ALERT: High error rate for websocket_reconnect_attempt: 14 errors in 300s
+2026-07-01 10:35:56.923 | CRITICAL | api_quotex.monitoring:default_alert_handler:348 - ALERT: websocket_reconnect_attempt - 14 errors
+2026-07-01 10:35:56.923 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 10:36:21.757 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 10:36:21.757 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region DEMO: Authentication timeout
+2026-07-01 10:36:21.757 | CRITICAL | api_quotex.monitoring:_trigger_alert:198 - ALERT: High error rate for connection_failed: 10 errors in 300s
+2026-07-01 10:36:21.757 | CRITICAL | api_quotex.monitoring:default_alert_handler:348 - ALERT: connection_failed - 10 errors
+2026-07-01 10:36:21.757 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to DEMO: Authentication timeout
+2026-07-01 10:36:21.757 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 1.80 seconds before next reconnect attempt
+2026-07-01 10:36:23.563 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: LIVE with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:36:23.563 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:36:24.255 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 10:36:24.701 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 10:36:24.701 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 10:36:24.701 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: LIVE
+2026-07-01 10:36:24.805 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 10:36:24.805 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 10:36:24.807 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 10:36:24.807 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:36:24.807 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 10:36:26.633 | CRITICAL | api_quotex.monitoring:_trigger_alert:198 - ALERT: High error rate for websocket_reconnect_attempt: 15 errors in 300s
+2026-07-01 10:36:26.633 | CRITICAL | api_quotex.monitoring:default_alert_handler:348 - ALERT: websocket_reconnect_attempt - 15 errors
+2026-07-01 10:36:26.633 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 10:36:26.633 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 10:36:26.635 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:36:26.635 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 10:36:29.890 | CRITICAL | api_quotex.monitoring:_trigger_alert:198 - ALERT: High error rate for websocket_reconnect_attempt: 16 errors in 300s
+2026-07-01 10:36:29.890 | CRITICAL | api_quotex.monitoring:default_alert_handler:348 - ALERT: websocket_reconnect_attempt - 16 errors
+2026-07-01 10:36:29.890 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 10:36:32.999 | INFO     | api_quotex.client:__init__:151 - Initialized Quotex client (demo=True, persistent=False) with enhanced monitoring
+2026-07-01 10:36:32.999 | INFO     | api_quotex.client:connect:181 - Connecting to Quotex...
+2026-07-01 10:36:32.999 | INFO     | api_quotex.client:_start_regular_connection:206 - Starting regular connection...
+2026-07-01 10:36:32.999 | INFO     | api_quotex.client:_start_regular_connection:212 - Demo mode: Using demo regions: ['DEMO', 'LIVE']
+2026-07-01 10:36:32.999 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: DEMO with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:36:33.006 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:36:34.706 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 10:36:35.217 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 10:36:35.218 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 10:36:35.218 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: DEMO
+2026-07-01 10:36:35.464 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 10:36:35.464 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 10:36:35.464 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 10:36:35.464 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:36:35.469 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 10:36:37.266 | CRITICAL | api_quotex.monitoring:_trigger_alert:198 - ALERT: High error rate for websocket_reconnect_attempt: 17 errors in 300s
+2026-07-01 10:36:37.266 | CRITICAL | api_quotex.monitoring:default_alert_handler:348 - ALERT: websocket_reconnect_attempt - 17 errors
+2026-07-01 10:36:37.266 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 10:36:37.266 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 10:36:37.266 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:36:37.266 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 10:36:40.504 | CRITICAL | api_quotex.monitoring:_trigger_alert:198 - ALERT: High error rate for websocket_reconnect_attempt: 18 errors in 300s
+2026-07-01 10:36:40.504 | CRITICAL | api_quotex.monitoring:default_alert_handler:348 - ALERT: websocket_reconnect_attempt - 18 errors
+2026-07-01 10:36:40.504 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 10:36:54.808 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 10:36:54.808 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region LIVE: Authentication timeout
+2026-07-01 10:36:54.808 | CRITICAL | api_quotex.monitoring:_trigger_alert:198 - ALERT: High error rate for connection_failed: 11 errors in 300s
+2026-07-01 10:36:54.808 | CRITICAL | api_quotex.monitoring:default_alert_handler:348 - ALERT: connection_failed - 11 errors
+2026-07-01 10:36:54.808 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to LIVE: Authentication timeout
+2026-07-01 10:36:54.808 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 3.24 seconds before next reconnect attempt
+2026-07-01 10:36:58.049 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Failed to connect to any region after 2 attempts (Code: None)
+2026-07-01 10:36:58.049 | ERROR    | api_quotex.client:connect:195 - Connection failed: Failed to connect to any region after 2 attempts
+2026-07-01 10:36:58.051 | CRITICAL | api_quotex.monitoring:_trigger_alert:198 - ALERT: High error rate for connection_failed: 12 errors in 300s
+2026-07-01 10:36:58.053 | CRITICAL | api_quotex.monitoring:default_alert_handler:348 - ALERT: connection_failed - 12 errors
+2026-07-01 10:36:58.055 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Connection failed: Failed to connect to any region after 2 attempts
+2026-07-01 10:37:05.237 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 10:37:05.237 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region DEMO: Authentication timeout
+2026-07-01 10:37:05.237 | CRITICAL | api_quotex.monitoring:_trigger_alert:198 - ALERT: High error rate for connection_failed: 13 errors in 300s
+2026-07-01 10:37:05.237 | CRITICAL | api_quotex.monitoring:default_alert_handler:348 - ALERT: connection_failed - 13 errors
+2026-07-01 10:37:05.237 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to DEMO: Authentication timeout
+2026-07-01 10:37:05.237 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 1.80 seconds before next reconnect attempt
+2026-07-01 10:37:07.040 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: LIVE with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:37:07.040 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:37:07.706 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 10:37:08.194 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 10:37:08.194 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 10:37:08.195 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: LIVE
+2026-07-01 10:37:08.436 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 10:37:08.436 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 10:37:08.436 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 10:37:08.436 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:37:08.436 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 10:37:10.239 | CRITICAL | api_quotex.monitoring:_trigger_alert:198 - ALERT: High error rate for websocket_reconnect_attempt: 19 errors in 300s
+2026-07-01 10:37:10.239 | CRITICAL | api_quotex.monitoring:default_alert_handler:348 - ALERT: websocket_reconnect_attempt - 19 errors
+2026-07-01 10:37:10.239 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 10:37:10.239 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 10:37:10.240 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:37:10.240 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 10:37:13.497 | CRITICAL | api_quotex.monitoring:_trigger_alert:198 - ALERT: High error rate for websocket_reconnect_attempt: 20 errors in 300s
+2026-07-01 10:37:13.497 | CRITICAL | api_quotex.monitoring:default_alert_handler:348 - ALERT: websocket_reconnect_attempt - 20 errors
+2026-07-01 10:37:13.497 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 10:37:38.260 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 10:37:38.262 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region LIVE: Authentication timeout
+2026-07-01 10:37:38.262 | CRITICAL | api_quotex.monitoring:_trigger_alert:198 - ALERT: High error rate for connection_failed: 14 errors in 300s
+2026-07-01 10:37:38.262 | CRITICAL | api_quotex.monitoring:default_alert_handler:348 - ALERT: connection_failed - 14 errors
+2026-07-01 10:37:38.262 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to LIVE: Authentication timeout
+2026-07-01 10:37:38.262 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 3.24 seconds before next reconnect attempt
+2026-07-01 10:37:41.511 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Failed to connect to any region after 2 attempts (Code: None)
+2026-07-01 10:37:41.513 | ERROR    | api_quotex.client:connect:195 - Connection failed: Failed to connect to any region after 2 attempts
+2026-07-01 10:37:41.513 | CRITICAL | api_quotex.monitoring:_trigger_alert:198 - ALERT: High error rate for connection_failed: 15 errors in 300s
+2026-07-01 10:37:41.514 | CRITICAL | api_quotex.monitoring:default_alert_handler:348 - ALERT: connection_failed - 15 errors
+2026-07-01 10:37:41.515 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Connection failed: Failed to connect to any region after 2 attempts
+2026-07-01 10:43:53.061 | INFO     | api_quotex.client:__init__:151 - Initialized Quotex client (demo=True, persistent=False) with enhanced monitoring
+2026-07-01 10:43:53.061 | INFO     | api_quotex.client:connect:181 - Connecting to Quotex...
+2026-07-01 10:43:53.061 | INFO     | api_quotex.client:_start_regular_connection:206 - Starting regular connection...
+2026-07-01 10:43:53.061 | INFO     | api_quotex.client:_start_regular_connection:212 - Demo mode: Using demo regions: ['DEMO', 'LIVE']
+2026-07-01 10:43:53.423 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: DEMO with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:43:53.423 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:43:54.025 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 10:43:54.457 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 10:43:54.457 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 10:43:54.457 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: DEMO
+2026-07-01 10:43:54.752 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 10:43:54.752 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 10:43:54.752 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 10:43:54.752 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:43:54.752 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 10:43:56.551 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 10:43:56.552 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 10:43:56.552 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:43:56.552 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 10:43:59.523 | INFO     | api_quotex.client:__init__:151 - Initialized Quotex client (demo=True, persistent=False) with enhanced monitoring
+2026-07-01 10:43:59.532 | INFO     | api_quotex.client:connect:181 - Connecting to Quotex...
+2026-07-01 10:43:59.532 | INFO     | api_quotex.client:_start_regular_connection:206 - Starting regular connection...
+2026-07-01 10:43:59.532 | INFO     | api_quotex.client:_start_regular_connection:212 - Demo mode: Using demo regions: ['DEMO', 'LIVE']
+2026-07-01 10:43:59.540 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: DEMO with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:43:59.540 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:43:59.784 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 10:44:00.132 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 10:44:00.567 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 10:44:00.567 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 10:44:00.567 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: DEMO
+2026-07-01 10:44:00.868 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 10:44:00.868 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 10:44:00.868 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 10:44:00.868 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:44:00.868 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 10:44:02.692 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 10:44:02.692 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 10:44:02.692 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:44:02.692 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 10:44:05.939 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 10:44:24.511 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 10:44:24.511 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region DEMO: Authentication timeout
+2026-07-01 10:44:24.511 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to DEMO: Authentication timeout
+2026-07-01 10:44:24.511 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 1.80 seconds before next reconnect attempt
+2026-07-01 10:44:24.523 | INFO     | api_quotex.client:__init__:151 - Initialized Quotex client (demo=True, persistent=False) with enhanced monitoring
+2026-07-01 10:44:24.523 | INFO     | api_quotex.client:connect:181 - Connecting to Quotex...
+2026-07-01 10:44:24.523 | INFO     | api_quotex.client:_start_regular_connection:206 - Starting regular connection...
+2026-07-01 10:44:24.523 | INFO     | api_quotex.client:_start_regular_connection:212 - Demo mode: Using demo regions: ['DEMO', 'LIVE']
+2026-07-01 10:44:24.536 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: DEMO with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:44:24.536 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:44:25.224 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 10:44:25.741 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 10:44:25.741 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 10:44:25.741 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: DEMO
+2026-07-01 10:44:25.955 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 10:44:25.955 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 10:44:25.955 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 10:44:25.955 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:44:25.955 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 10:44:26.323 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: LIVE with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:44:26.323 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:44:27.073 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 10:44:27.583 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 10:44:27.584 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 10:44:27.584 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: LIVE
+2026-07-01 10:44:27.744 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 10:44:27.744 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 10:44:27.744 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:44:27.746 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 10:44:27.790 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 10:44:27.790 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 10:44:27.790 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 10:44:27.790 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:44:27.790 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 10:44:29.606 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 10:44:29.606 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 10:44:29.606 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:44:29.608 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 10:44:30.645 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 10:44:30.645 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region DEMO: Authentication timeout
+2026-07-01 10:44:30.645 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to DEMO: Authentication timeout
+2026-07-01 10:44:30.645 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 1.80 seconds before next reconnect attempt
+2026-07-01 10:44:30.976 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 10:44:32.454 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: LIVE with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:44:32.454 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:44:32.861 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 10:44:33.114 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 10:44:33.626 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 10:44:33.627 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 10:44:33.628 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: LIVE
+2026-07-01 10:44:33.853 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 10:44:33.855 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 10:44:33.856 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 10:44:33.856 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:44:33.857 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 10:44:35.674 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 10:44:35.675 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 10:44:35.675 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:44:35.675 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 10:44:38.923 | CRITICAL | api_quotex.monitoring:_trigger_alert:198 - ALERT: High error rate for websocket_reconnect_attempt: 10 errors in 300s
+2026-07-01 10:44:38.925 | CRITICAL | api_quotex.monitoring:default_alert_handler:348 - ALERT: websocket_reconnect_attempt - 10 errors
+2026-07-01 10:44:38.925 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 10:44:55.797 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 10:44:55.797 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region DEMO: Authentication timeout
+2026-07-01 10:44:55.797 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to DEMO: Authentication timeout
+2026-07-01 10:44:55.797 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 1.80 seconds before next reconnect attempt
+2026-07-01 10:44:57.598 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 10:44:57.598 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region LIVE: Authentication timeout
+2026-07-01 10:44:57.598 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to LIVE: Authentication timeout
+2026-07-01 10:44:57.598 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 3.24 seconds before next reconnect attempt
+2026-07-01 10:44:57.598 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: LIVE with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:44:57.598 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-07-01 10:44:58.303 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-07-01 10:44:58.761 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-07-01 10:44:58.761 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-07-01 10:44:58.761 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: LIVE
+2026-07-01 10:44:59.046 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-07-01 10:44:59.046 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=authorization/reject, data={}
+2026-07-01 10:44:59.046 | INFO     | api_quotex.websocket_client:_handle_disconnect_message:666 - Received Socket.IO disconnect message ('41')
+2026-07-01 10:44:59.046 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:44:59.046 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 1/5
+2026-07-01 10:45:00.841 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Failed to connect to any region after 2 attempts (Code: None)
+2026-07-01 10:45:00.842 | ERROR    | api_quotex.client:connect:195 - Connection failed: Failed to connect to any region after 2 attempts
+2026-07-01 10:45:00.842 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Connection failed: Failed to connect to any region after 2 attempts
+2026-07-01 10:45:00.842 | CRITICAL | api_quotex.monitoring:_trigger_alert:198 - ALERT: High error rate for websocket_reconnect_attempt: 11 errors in 300s
+2026-07-01 10:45:00.842 | CRITICAL | api_quotex.monitoring:default_alert_handler:348 - ALERT: websocket_reconnect_attempt - 11 errors
+2026-07-01 10:45:00.842 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 1/5
+2026-07-01 10:45:00.843 | INFO     | api_quotex.websocket_client:receive_messages:342 - WebSocket connection closed normally (code 1005 or OK)
+2026-07-01 10:45:00.843 | INFO     | api_quotex.websocket_client:_handle_disconnect:972 - Handling WebSocket disconnection
+2026-07-01 10:45:00.843 | INFO     | api_quotex.websocket_client:_handle_disconnect:990 - Attempting reconnection 2/5
+2026-07-01 10:45:03.708 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 10:45:03.708 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region LIVE: Authentication timeout
+2026-07-01 10:45:03.708 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to LIVE: Authentication timeout
+2026-07-01 10:45:03.708 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 3.24 seconds before next reconnect attempt
+2026-07-01 10:45:04.088 | CRITICAL | api_quotex.monitoring:_trigger_alert:198 - ALERT: High error rate for websocket_reconnect_attempt: 12 errors in 300s
+2026-07-01 10:45:04.088 | CRITICAL | api_quotex.monitoring:default_alert_handler:348 - ALERT: websocket_reconnect_attempt - 12 errors
+2026-07-01 10:45:04.089 | ERROR    | api_quotex.monitoring:record_error:175 - [MEDIUM] connection: Attempting reconnection 2/5
+2026-07-01 10:45:06.942 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Failed to connect to any region after 2 attempts (Code: None)
+2026-07-01 10:45:06.942 | ERROR    | api_quotex.client:connect:195 - Connection failed: Failed to connect to any region after 2 attempts
+2026-07-01 10:45:06.942 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Connection failed: Failed to connect to any region after 2 attempts
+2026-07-01 10:45:28.828 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Authentication timeout (Code: None)
+2026-07-01 10:45:28.828 | WARNING  | api_quotex.client:_start_regular_connection:265 - Failed to connect to region LIVE: Authentication timeout
+2026-07-01 10:45:28.828 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Failed to connect to LIVE: Authentication timeout
+2026-07-01 10:45:28.829 | INFO     | api_quotex.client:_start_regular_connection:279 - Waiting 3.24 seconds before next reconnect attempt
+2026-07-01 10:45:32.070 | ERROR    | api_quotex.exceptions:__init__:14 - QuotexError: Failed to connect to any region after 2 attempts (Code: None)
+2026-07-01 10:45:32.070 | ERROR    | api_quotex.client:connect:195 - Connection failed: Failed to connect to any region after 2 attempts
+2026-07-01 10:45:32.070 | ERROR    | api_quotex.monitoring:record_error:175 - [HIGH] connection: Connection failed: Failed to connect to any region after 2 attempts

@@ -1,0 +1,130 @@
+2026-06-29 23:00:52.633 | INFO     | api_quotex.config:_load_config:103 - Configuration loaded from config.json
+2026-06-29 23:00:52.633 | INFO     | api_quotex.config:_load_session:139 - Session data loaded from session.json
+2026-06-29 23:00:52.633 | INFO     | api_quotex.config:__init__:78 - Config instance initialized successfully
+2026-06-29 23:01:13.565 | INFO     | api_quotex.config:_load_config:103 - Configuration loaded from config.json
+2026-06-29 23:01:13.565 | INFO     | api_quotex.config:_load_session:139 - Session data loaded from session.json
+2026-06-29 23:01:13.565 | INFO     | api_quotex.config:__init__:78 - Config instance initialized successfully
+2026-06-29 23:01:15.243 | INFO     | api_quotex.config:_load_config:103 - Configuration loaded from config.json
+2026-06-29 23:01:15.243 | INFO     | api_quotex.config:_load_session:139 - Session data loaded from session.json
+2026-06-29 23:01:15.243 | INFO     | api_quotex.config:__init__:78 - Config instance initialized successfully
+2026-06-29 23:07:31.400 | INFO     | api_quotex.config:_load_config:103 - Configuration loaded from config.json
+2026-06-29 23:07:31.400 | INFO     | api_quotex.config:_load_session:139 - Session data loaded from session.json
+2026-06-29 23:07:31.400 | INFO     | api_quotex.config:__init__:78 - Config instance initialized successfully
+2026-06-29 23:07:31.640 | INFO     | api_quotex.login:get_ssid:284 - Checking existing saved session...
+2026-06-29 23:07:32.163 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-06-29 23:07:32.783 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-06-29 23:07:33.232 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-06-29 23:07:33.234 | INFO     | api_quotex.websocket_client:disconnect:216 - Disconnecting from WebSocket
+2026-06-29 23:07:33.873 | INFO     | api_quotex.login:validate_ssid:115 - SSID validated successfully using wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-06-29 23:07:33.873 | INFO     | api_quotex.login:get_ssid:294 - Existing session is valid.
+2026-06-29 23:07:33.873 | INFO     | api_quotex.client:__init__:151 - Initialized Quotex client (demo=True, persistent=False) with enhanced monitoring
+2026-06-29 23:07:33.873 | INFO     | api_quotex.client:connect:181 - Connecting to Quotex...
+2026-06-29 23:07:33.873 | INFO     | api_quotex.client:_start_regular_connection:206 - Starting regular connection...
+2026-06-29 23:07:33.873 | INFO     | api_quotex.client:_start_regular_connection:212 - Demo mode: Using demo regions: ['DEMO', 'LIVE']
+2026-06-29 23:07:33.881 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: DEMO with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-06-29 23:07:33.882 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-06-29 23:07:34.853 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-06-29 23:07:35.339 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-06-29 23:07:35.339 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-06-29 23:07:35.339 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: DEMO
+2026-06-29 23:07:35.898 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-06-29 23:07:35.898 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-06-29 23:07:35.899 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=settings/list, data=[{'chart_id': 'graph', 'settings': '{"chartId":"graph","chartType":2,"currentExpirationTime":0,"isFa
+2026-06-29 23:07:35.899 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=s_balance/list, data={'liveBalance': 0, 'demoBalance': 10000, 'tournamentsBalances': {}, 'dayLimit': 0, 'dayBalance': 0}
+2026-06-29 23:07:35.900 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=orders/opened/list, data=[]
+2026-06-29 23:07:35.900 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=s_drawing/load, data={'list': []}
+2026-06-29 23:07:35.996 | INFO     | api_quotex.client:_start_keep_alive_tasks:354 - Starting keep-alive tasks for regular connection...
+2026-06-29 23:07:35.996 | INFO     | api_quotex.client:_start_regular_connection:247 - Successfully connected and authenticated
+2026-06-29 23:07:36.393 | INFO     | api_quotex.client:_on_balance_data:1234 - Balance updated: uid=89966122, balance=10000.0
+2026-06-29 23:07:36.671 | INFO     | api_quotex.client:disconnect:315 - Disconnecting from Quotex...
+2026-06-29 23:07:36.671 | INFO     | api_quotex.websocket_client:disconnect:216 - Disconnecting from WebSocket
+2026-06-29 23:07:37.068 | INFO     | api_quotex.client:disconnect:351 - Disconnected successfully
+2026-06-29 23:07:57.590 | INFO     | api_quotex.client:__init__:151 - Initialized Quotex client (demo=True, persistent=False) with enhanced monitoring
+2026-06-29 23:07:57.590 | INFO     | api_quotex.client:connect:181 - Connecting to Quotex...
+2026-06-29 23:07:57.590 | INFO     | api_quotex.client:_start_regular_connection:206 - Starting regular connection...
+2026-06-29 23:07:57.590 | INFO     | api_quotex.client:_start_regular_connection:212 - Demo mode: Using demo regions: ['DEMO', 'LIVE']
+2026-06-29 23:07:57.604 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: DEMO with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-06-29 23:07:57.604 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-06-29 23:07:58.211 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-06-29 23:07:58.643 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-06-29 23:07:58.643 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-06-29 23:07:58.643 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: DEMO
+2026-06-29 23:07:58.957 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-06-29 23:07:58.958 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-06-29 23:07:58.959 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=settings/list, data=[{'chart_id': 'graph', 'settings': '{"chartId":"graph","chartType":2,"currentExpirationTime":0,"isFa
+2026-06-29 23:07:58.959 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=s_balance/list, data={'liveBalance': 0, 'demoBalance': 10000, 'tournamentsBalances': {}, 'dayLimit': 0, 'dayBalance': 0}
+2026-06-29 23:07:58.960 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=orders/opened/list, data=[]
+2026-06-29 23:07:58.960 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=s_drawing/load, data={'list': []}
+2026-06-29 23:07:59.077 | INFO     | api_quotex.client:_start_keep_alive_tasks:354 - Starting keep-alive tasks for regular connection...
+2026-06-29 23:07:59.079 | INFO     | api_quotex.client:_start_regular_connection:247 - Successfully connected and authenticated
+2026-06-29 23:07:59.468 | INFO     | api_quotex.client:_on_balance_data:1234 - Balance updated: uid=89966122, balance=10000.0
+2026-06-29 23:07:59.699 | INFO     | api_quotex.client:disconnect:315 - Disconnecting from Quotex...
+2026-06-29 23:07:59.701 | INFO     | api_quotex.websocket_client:disconnect:216 - Disconnecting from WebSocket
+2026-06-29 23:08:00.096 | INFO     | api_quotex.client:disconnect:351 - Disconnected successfully
+2026-06-29 23:08:01.840 | INFO     | api_quotex.client:__init__:151 - Initialized Quotex client (demo=True, persistent=False) with enhanced monitoring
+2026-06-29 23:08:01.840 | INFO     | api_quotex.client:connect:181 - Connecting to Quotex...
+2026-06-29 23:08:01.842 | INFO     | api_quotex.client:_start_regular_connection:206 - Starting regular connection...
+2026-06-29 23:08:01.842 | INFO     | api_quotex.client:_start_regular_connection:212 - Demo mode: Using demo regions: ['DEMO', 'LIVE']
+2026-06-29 23:08:01.859 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: DEMO with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-06-29 23:08:01.859 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-06-29 23:08:02.486 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-06-29 23:08:03.000 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-06-29 23:08:03.000 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-06-29 23:08:03.000 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: DEMO
+2026-06-29 23:08:03.218 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-06-29 23:08:03.218 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-06-29 23:08:03.219 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=s_balance/list, data={'liveBalance': 0, 'demoBalance': 10000, 'tournamentsBalances': {}, 'dayLimit': 0, 'dayBalance': 0}
+2026-06-29 23:08:03.225 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=settings/list, data=[{'chart_id': 'graph', 'settings': '{"chartId":"graph","chartType":2,"currentExpirationTime":0,"isFa
+2026-06-29 23:08:03.226 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=s_drawing/load, data={'list': []}
+2026-06-29 23:08:03.226 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=orders/opened/list, data=[]
+2026-06-29 23:08:03.292 | INFO     | api_quotex.client:_start_keep_alive_tasks:354 - Starting keep-alive tasks for regular connection...
+2026-06-29 23:08:03.292 | INFO     | api_quotex.client:_start_regular_connection:247 - Successfully connected and authenticated
+2026-06-29 23:08:03.803 | INFO     | api_quotex.client:_on_balance_data:1234 - Balance updated: uid=89966122, balance=10000.0
+2026-06-29 23:08:03.898 | INFO     | api_quotex.client:disconnect:315 - Disconnecting from Quotex...
+2026-06-29 23:08:03.898 | INFO     | api_quotex.websocket_client:disconnect:216 - Disconnecting from WebSocket
+2026-06-29 23:08:04.289 | INFO     | api_quotex.client:disconnect:351 - Disconnected successfully
+2026-06-29 23:12:30.336 | INFO     | api_quotex.client:__init__:151 - Initialized Quotex client (demo=True, persistent=False) with enhanced monitoring
+2026-06-29 23:12:30.336 | INFO     | api_quotex.client:connect:181 - Connecting to Quotex...
+2026-06-29 23:12:30.336 | INFO     | api_quotex.client:_start_regular_connection:206 - Starting regular connection...
+2026-06-29 23:12:30.336 | INFO     | api_quotex.client:_start_regular_connection:212 - Demo mode: Using demo regions: ['DEMO', 'LIVE']
+2026-06-29 23:12:30.350 | INFO     | api_quotex.client:_start_regular_connection:235 - Trying region: DEMO with URL: wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-06-29 23:12:30.350 | INFO     | api_quotex.websocket_client:connect:154 - Attempting to connect to wss://ws2.qxbroker.com/socket.io/?EIO=3&transport=websocket
+2026-06-29 23:12:30.949 | INFO     | api_quotex.websocket_client:connect:186 - Connected to LIVE region successfully
+2026-06-29 23:12:31.383 | INFO     | api_quotex.websocket_client:_send_handshake:451 - Authentication successful (via instruments/list header)
+2026-06-29 23:12:31.383 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-06-29 23:12:31.386 | INFO     | api_quotex.client:_start_regular_connection:240 - Connected to region: DEMO
+2026-06-29 23:12:31.665 | INFO     | api_quotex.client:_on_assets_updated:886 - Stored 92 assets from instruments/list
+2026-06-29 23:12:31.667 | INFO     | api_quotex.client:_on_authenticated:1148 - Authenticated with server
+2026-06-29 23:12:31.667 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=s_balance/list, data={'liveBalance': 0, 'demoBalance': 10000.88, 'tournamentsBalances': {}, 'dayLimit': 0, 'dayBalance': 
+2026-06-29 23:12:31.768 | INFO     | api_quotex.client:_start_keep_alive_tasks:354 - Starting keep-alive tasks for regular connection...
+2026-06-29 23:12:31.768 | INFO     | api_quotex.client:_start_regular_connection:247 - Successfully connected and authenticated
+2026-06-29 23:12:31.944 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=settings/list, data=[{'chart_id': 'graph', 'settings': '{"chartId":"graph","chartType":2,"currentExpirationTime":0,"isFa
+2026-06-29 23:12:31.946 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=s_drawing/load, data={'list': []}
+2026-06-29 23:12:31.946 | INFO     | api_quotex.client:_on_json_data:1643 - Received JSON event: type=orders/opened/list, data=[]
+2026-06-29 23:12:31.957 | INFO     | api_quotex.client:_on_order_closed:1441 - Order CLOSED: req=None id=4d707f24-1d97-4189-8a38-6662062c84d8 status=OrderStatus.WIN profit=0.88
+2026-06-29 23:12:32.058 | INFO     | api_quotex.client:disconnect:315 - Disconnecting from Quotex...
+2026-06-29 23:12:32.058 | INFO     | api_quotex.websocket_client:disconnect:216 - Disconnecting from WebSocket
+2026-06-29 23:12:32.446 | INFO     | api_quotex.client:disconnect:351 - Disconnected successfully
+2026-06-29 23:24:41.227 | INFO     | api_quotex.config:_load_config:103 - Configuration loaded from config.json
+2026-06-29 23:24:41.227 | INFO     | api_quotex.config:_load_session:139 - Session data loaded from session.json
+2026-06-29 23:24:41.227 | INFO     | api_quotex.config:__init__:78 - Config instance initialized successfully
+2026-06-29 23:24:41.241 | INFO     | api_quotex.config:_load_config:103 - Configuration loaded from config.json
+2026-06-29 23:24:41.241 | INFO     | api_quotex.config:_load_session:139 - Session data loaded from session.json
+2026-06-29 23:24:41.241 | INFO     | api_quotex.config:__init__:78 - Config instance initialized successfully
+2026-06-29 23:25:29.691 | INFO     | api_quotex.config:_load_config:103 - Configuration loaded from config.json
+2026-06-29 23:25:29.691 | INFO     | api_quotex.config:_load_session:139 - Session data loaded from session.json
+2026-06-29 23:25:29.691 | INFO     | api_quotex.config:__init__:78 - Config instance initialized successfully
+2026-06-29 23:25:31.559 | INFO     | api_quotex.config:_load_config:103 - Configuration loaded from config.json
+2026-06-29 23:25:31.559 | INFO     | api_quotex.config:_load_session:139 - Session data loaded from session.json
+2026-06-29 23:25:31.559 | INFO     | api_quotex.config:__init__:78 - Config instance initialized successfully
+2026-06-29 23:47:29.494 | INFO     | api_quotex.config:_load_config:103 - Configuration loaded from config.json
+2026-06-29 23:47:29.495 | INFO     | api_quotex.config:_load_session:139 - Session data loaded from session.json
+2026-06-29 23:47:29.495 | INFO     | api_quotex.config:_load_session:139 - Session data loaded from session.json
+2026-06-29 23:47:29.495 | INFO     | api_quotex.config:__init__:78 - Config instance initialized successfully
+2026-06-29 23:47:29.495 | INFO     | api_quotex.config:__init__:78 - Config instance initialized successfully
+2026-06-29 23:48:09.257 | INFO     | api_quotex.config:_load_config:103 - Configuration loaded from config.json
+2026-06-29 23:48:09.257 | INFO     | api_quotex.config:_load_session:139 - Session data loaded from session.json
+2026-06-29 23:48:09.257 | INFO     | api_quotex.config:__init__:78 - Config instance initialized successfully
+2026-06-29 23:48:11.052 | INFO     | api_quotex.config:_load_config:103 - Configuration loaded from config.json
+2026-06-29 23:48:11.052 | INFO     | api_quotex.config:_load_session:139 - Session data loaded from session.json
+2026-06-29 23:48:11.052 | INFO     | api_quotex.config:__init__:78 - Config instance initialized successfully
