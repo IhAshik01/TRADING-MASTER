@@ -17,6 +17,8 @@ from zoneinfo import ZoneInfo
 from typing import List, Dict, Any, Optional
 
 import httpx
+import firebase_admin
+from firebase_admin import credentials, firestore
 from dotenv import load_dotenv
 from fastapi import FastAPI, Query, UploadFile, File, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -28,6 +30,24 @@ load_dotenv()
 TWELVEDATA_API_KEY = os.getenv("TWELVEDATA_API_KEY")
 APP_TIMEZONE = os.getenv("APP_TIMEZONE", "Asia/Dhaka")
 ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "tradingmaster123")
+
+# Initialize Firebase
+service_account_json = os.getenv("FIREBASE_SERVICE_ACCOUNT")
+if service_account_json:
+    try:
+        sa_dict = json.loads(service_account_json)
+        cred = credentials.Certificate(sa_dict)
+        firebase_admin.initialize_app(cred)
+    except Exception as e:
+        print(f"Error initializing Firebase with service account: {e}")
+        firebase_admin.initialize_app()
+else:
+    try:
+        firebase_admin.initialize_app()
+    except Exception:
+        pass
+
+db = firestore.client()
 
 app = FastAPI(title="TRADING MASTER API", version="2.0.0")
 
@@ -213,15 +233,8 @@ def require_admin_token(x_admin_token: str = Header(default="")):
 
 
 # ============================================================
-# OTC CACHE / PUSH FEED
+# PERSISTENT MODELS & HELPERS
 # ============================================================
-
-OTC_CANDLE_CACHE: Dict[str, Dict[str, List[Dict[str, Any]]]] = {}
-OTC_PAIR_STATS_CACHE = {
-    "time": None,
-    "data": {},
-}
-
 
 class OtcCandleIn(BaseModel):
     time: str
@@ -269,30 +282,18 @@ ASSET_LOOKUP = _build_asset_lookup()
 
 def normalize_otc_symbol(symbol: str) -> str:
     s = (symbol or "").strip()
-
-    if not s:
-        return s
-
-    if s in OTC_ASSETS or s in REAL_ASSETS:
-        return s
-
-    if s in QUOTEX_ALIAS_MAP:
-        return QUOTEX_ALIAS_MAP[s]
-
+    if not s: return s
+    if s in OTC_ASSETS or s in REAL_ASSETS: return s
+    if s in QUOTEX_ALIAS_MAP: return QUOTEX_ALIAS_MAP[s]
     key = _compact_asset_key(s)
-    if key in ASSET_LOOKUP:
-        return ASSET_LOOKUP[key]
-
+    if key in ASSET_LOOKUP: return ASSET_LOOKUP[key]
     if s.lower().endswith("_otc"):
         base = re.sub(r"[^A-Za-z0-9]", "", s[:-4]).upper()
         return f"{base}_otc"
-
     cleaned = re.sub(r"[^A-Za-z0-9]", "", s).upper()
     if len(cleaned) == 6:
         guess = f"{cleaned}_otc"
-        if guess in OTC_ASSETS:
-            return guess
-
+        if guess in OTC_ASSETS: return guess
     return s
 
 
@@ -310,26 +311,52 @@ def parse_iso_time(value: str) -> datetime:
 
 def timeframe_seconds(timeframe: str) -> int:
     tf = timeframe.lower().strip()
-    if tf in ["5m", "5min", "5"]:
-        return 300
+    if tf in ["5m", "5min", "5"]: return 300
     return 60
 
 
 def normalize_timeframe(timeframe: str) -> str:
     tf = timeframe.lower().strip()
-    if tf in ["5m", "5min", "5"]:
-        return "5m"
+    if tf in ["5m", "5min", "5"]: return "5m"
     return "1m"
 
+
+def aggregate_candles(source_candles: List[Dict[str, Any]], target_tf: str) -> List[Dict[str, Any]]:
+    if not source_candles: return []
+    seconds = timeframe_seconds(target_tf)
+    buckets: Dict[int, List[Dict[str, Any]]] = {}
+    for c in source_candles:
+        dt = parse_iso_time(str(c["time"]))
+        bucket = int(dt.timestamp()) // seconds * seconds
+        buckets.setdefault(bucket, []).append(c)
+    out = []
+    for bucket in sorted(buckets.keys()):
+        group = sorted(buckets[bucket], key=lambda x: parse_iso_time(str(x["time"])))
+        out.append({
+            "time": datetime.fromtimestamp(bucket, tz=timezone.utc).isoformat(),
+            "open": float(group[0]["open"]),
+            "high": max(float(x["high"]) for x in group),
+            "low": min(float(x["low"]) for x in group),
+            "close": float(group[-1]["close"]),
+        })
+    return out
+
+
+# ============================================================
+# OTC CACHE / PUSH FEED (Firestore Persistent)
+# ============================================================
 
 def store_otc_candles(symbol: str, timeframe: str, candles: List[Dict[str, Any]], max_len: int = 500):
     symbol = normalize_otc_symbol(symbol)
     timeframe = normalize_timeframe(timeframe)
 
-    if symbol not in OTC_CANDLE_CACHE:
-        OTC_CANDLE_CACHE[symbol] = {}
+    doc_ref = db.collection("otc_data").document("candles").collection(symbol).document(timeframe)
+    doc = doc_ref.get()
 
-    existing = OTC_CANDLE_CACHE[symbol].get(timeframe, [])
+    existing = []
+    if doc.exists:
+        existing = doc.to_dict().get("candles", [])
+
     merged = existing + candles
 
     dedup = {}
@@ -347,55 +374,32 @@ def store_otc_candles(symbol: str, timeframe: str, candles: List[Dict[str, Any]]
         key=lambda x: parse_iso_time(str(x["time"]))
     )
 
-    OTC_CANDLE_CACHE[symbol][timeframe] = ordered[-max_len:]
-
-
-def aggregate_candles(source_candles: List[Dict[str, Any]], target_tf: str) -> List[Dict[str, Any]]:
-    if not source_candles:
-        return []
-
-    seconds = timeframe_seconds(target_tf)
-    buckets: Dict[int, List[Dict[str, Any]]] = {}
-
-    for c in source_candles:
-        dt = parse_iso_time(str(c["time"]))
-        bucket = int(dt.timestamp()) // seconds * seconds
-        buckets.setdefault(bucket, []).append(c)
-
-    out = []
-    for bucket in sorted(buckets.keys()):
-        group = sorted(buckets[bucket], key=lambda x: parse_iso_time(str(x["time"])))
-        out.append({
-            "time": datetime.fromtimestamp(bucket, tz=timezone.utc).isoformat(),
-            "open": float(group[0]["open"]),
-            "high": max(float(x["high"]) for x in group),
-            "low": min(float(x["low"]) for x in group),
-            "close": float(group[-1]["close"]),
-        })
-
-    return out
+    doc_ref.set({"candles": ordered[-max_len:]})
 
 
 def get_cached_otc_candles(symbol: str, timeframe: str, min_count: int = 10) -> List[Dict[str, Any]]:
     symbol = normalize_otc_symbol(symbol)
     timeframe = normalize_timeframe(timeframe)
 
-    if symbol not in OTC_CANDLE_CACHE:
-        raise Exception(f"No OTC cache found for {symbol}")
+    doc_ref = db.collection("otc_data").document("candles").collection(symbol).document(timeframe)
+    doc = doc_ref.get()
 
-    # Exact timeframe available
-    exact = OTC_CANDLE_CACHE[symbol].get(timeframe, [])
-    if len(exact) >= min_count:
-        return exact[-120:]
+    if doc.exists:
+        candles = doc.to_dict().get("candles", [])
+        if len(candles) >= min_count:
+            return candles[-120:]
 
     # Build 5m from 1m if needed
     if timeframe == "5m":
-        one_min = OTC_CANDLE_CACHE[symbol].get("1m", [])
-        agg = aggregate_candles(one_min, "5m")
-        if len(agg) >= min_count:
-            return agg[-120:]
+        one_min_ref = db.collection("otc_data").document("candles").collection(symbol).document("1m")
+        one_min_doc = one_min_ref.get()
+        if one_min_doc.exists:
+            one_min = one_min_doc.to_dict().get("candles", [])
+            agg = aggregate_candles(one_min, "5m")
+            if len(agg) >= min_count:
+                return agg[-120:]
 
-    raise Exception(f"Not enough cached OTC candles for {symbol} ({timeframe})")
+    raise Exception(f"No OTC cache or not enough data found for {symbol} ({timeframe}) in Firestore")
 
 
 def label_for_otc_asset(asset_symbol: str) -> str:
@@ -1202,14 +1206,22 @@ async def otc_push_candles(payload: OtcPushCandlesRequest, x_admin_token: str = 
         "symbol": symbol,
         "timeframe": timeframe,
         "stored": len(candles),
-        "total_cached": len(OTC_CANDLE_CACHE.get(symbol, {}).get(timeframe, [])),
     }
 
 
 @app.post("/otc/push-pairs")
 async def otc_push_pairs(payload: OtcPushPairsRequest, x_admin_token: str = Header(default="")):
     require_admin_token(x_admin_token)
-    current = OTC_PAIR_STATS_CACHE.get("data", {}) or default_otc_pair_stats()
+
+    doc_ref = db.collection("otc_data").document("pairs")
+    doc = doc_ref.get()
+
+    current = {}
+    if doc.exists:
+        current = doc.to_dict().get("data", {})
+
+    if not current:
+        current = default_otc_pair_stats()
 
     for item in payload.items:
         symbol = normalize_otc_symbol(item.symbol)
@@ -1223,8 +1235,10 @@ async def otc_push_pairs(payload: OtcPushPairsRequest, x_admin_token: str = Head
             "price": float(item.price) if item.price is not None else None,
         }
 
-    OTC_PAIR_STATS_CACHE["time"] = datetime.now(timezone.utc).timestamp()
-    OTC_PAIR_STATS_CACHE["data"] = current
+    doc_ref.set({
+        "time": datetime.now(timezone.utc).timestamp(),
+        "data": current
+    })
 
     return {
         "ok": True,
@@ -1234,27 +1248,39 @@ async def otc_push_pairs(payload: OtcPushPairsRequest, x_admin_token: str = Head
 
 @app.get("/quotex-pairs")
 async def quotex_pairs():
-    data = default_otc_pair_stats()
+    doc_ref = db.collection("otc_data").document("pairs")
+    doc = doc_ref.get()
 
-    cached = OTC_PAIR_STATS_CACHE.get("data", {})
-    for symbol, row in cached.items():
-        data[symbol] = row
+    if doc.exists:
+        cached = doc.to_dict()
+        data = cached.get("data", {})
+        # ensure defaults exist
+        defaults = default_otc_pair_stats()
+        for k, v in defaults.items():
+            if k not in data:
+                data[k] = v
+
+        return {
+            "ok": True,
+            "count": len(data),
+            "data": data,
+            "updated_at": cached.get("time"),
+        }
 
     return {
         "ok": True,
-        "count": len(data),
-        "data": data,
-        "updated_at": OTC_PAIR_STATS_CACHE.get("time"),
+        "count": len(OTC_ASSETS),
+        "data": default_otc_pair_stats(),
+        "updated_at": None,
     }
 
 
 @app.get("/quotex-warmup")
 async def quotex_warmup():
+    # Warmup logic can be simplified as we use Firestore now
     return {
         "ok": True,
-        "mode": "cache",
-        "cached_symbols": len(OTC_CANDLE_CACHE),
-        "pair_stats_count": len(OTC_PAIR_STATS_CACHE.get("data", {})),
+        "mode": "firestore",
     }
 
 
