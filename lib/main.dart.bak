@@ -33,7 +33,11 @@ Future<void> main() async {
 }
 
 class ApiConfig {
-  static const String baseUrl = 'http://192.168.1.202:8000';
+  // Local: Use http://192.168.1.202:8010 for local testing
+  // static const String baseUrl = 'http://192.168.1.202:8010';
+
+  // Render: Use your actual Render URL after deployment
+  static const String baseUrl = 'https://trading-master-api.onrender.com';
 }
 
 class AppColors {
@@ -70,7 +74,7 @@ class Candle {
   bool get isBullish => close > open;
   bool get isBearish => close < open;
   bool get isDoji => (body / totalRange) < 0.1;
-
+  
   double trueRange(double prevClose) => max(
     high - low,
     max((high - prevClose).abs(), (low - prevClose).abs()),
@@ -79,7 +83,7 @@ class Candle {
 
 class PatternResult {
   final bool detected;
-  final double quality;
+  final double quality; 
   final String name;
   final bool isBullish;
 
@@ -211,7 +215,7 @@ class SignalData {
     }
 
     final rawFeatures = json['features'];
-    final List<double> features = rawFeatures is List
+    final List<double> features = rawFeatures is List 
         ? rawFeatures.map((e) => _toDouble(e)).toList()
         : [];
 
@@ -542,7 +546,7 @@ class SignalEngine {
     final atrVal = _calculateATR(candles, 14);
 
     final List<PatternResult> patterns = _detectAllPatterns(candles);
-
+    
     double bullScore = 0;
     double bearScore = 0;
     List<String> reasons = [];
@@ -608,9 +612,9 @@ class SignalEngine {
       'price': closes.last,
       'rec_expiry': recExpiry,
       'features': [
-        bullScore/100,
-        bearScore/100,
-        rsiVal/100,
+        bullScore/100, 
+        bearScore/100, 
+        rsiVal/100, 
         (closes.last-ema9)/closes.last,
         atrVal/closes.last,
         macdData['hist']!/closes.last,
@@ -673,7 +677,7 @@ class SignalEngine {
     final ema26 = _calculateEMA(closes, 26);
     if (ema12.length < 26 || ema26.length < 26) return {'hist': 0};
     final macdLine = ema12.last - ema26.last;
-    final signalLine = _calculateEMA(ema12.map((e) => e).toList(), 9).last;
+    final signalLine = _calculateEMA(ema12.map((e) => e).toList(), 9).last; 
     return {'hist': macdLine - signalLine};
   }
 
@@ -857,9 +861,9 @@ class FirestoreService {
     if (doc.exists) {
       UserProfile profile = UserProfile.fromFirestore(doc);
       DateTime now = DateTime.now();
-      if (profile.lastUsageDate == null ||
-          profile.lastUsageDate!.day != now.day ||
-          profile.lastUsageDate!.month != now.month ||
+      if (profile.lastUsageDate == null || 
+          profile.lastUsageDate!.day != now.day || 
+          profile.lastUsageDate!.month != now.month || 
           profile.lastUsageDate!.year != now.year) {
         await _db.collection('users').doc(user.uid).update({
           'tradesUsedToday': 0,

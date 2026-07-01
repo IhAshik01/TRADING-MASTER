@@ -1040,7 +1040,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Container(height: 78, width: 78, decoration: BoxDecoration(color: const Color(0xFF080D14), borderRadius: BorderRadius.circular(22), boxShadow: [BoxShadow(color: AppColors.cyan.withOpacity(0.35), blurRadius: 24)]), child: const Icon(Icons.stacked_line_chart, color: AppColors.cyan, size: 46)),
+                Container(height: 78, width: 78, decoration: BoxDecoration(color: const Color(0xFF080D14), borderRadius: BorderRadius.circular(22), boxShadow: [BoxShadow(color: AppColors.cyan.withOpacity(0.35), blurRadius: 24)]), child: Padding(padding: const EdgeInsets.all(12), child: Image.asset('assets/logo/logo.png'))),
                 const SizedBox(height: 24),
                 const Text('TRADING MASTER', textAlign: TextAlign.center, style: TextStyle(fontSize: 30, fontWeight: FontWeight.w900, letterSpacing: 1.2)),
                 const SizedBox(height: 8),
@@ -1075,7 +1075,7 @@ class DashboardScreen extends StatelessWidget {
       drawer: AppDrawer(user: user, onDashboard: () => Navigator.pop(context), onReal: () => openSignal(context, 'REAL'), onOtc: () => openSignal(context, 'OTC'), onFuture: () => openFuture(context), onChart: () => openChartAnalyzer(context), onJournal: () => openJournal(context), onProfile: () => openProfile(context), onAdmin: () => openAdmin(context)),
       appBar: AppBar(
         backgroundColor: AppColors.card,
-        title: const Row(children: [Icon(Icons.stacked_line_chart, color: AppColors.cyan), SizedBox(width: 10), Text('TRADING MASTER', style: TextStyle(fontWeight: FontWeight.w900))]),
+        title: Row(children: [Image.asset('assets/logo/logo.png', height: 28), const SizedBox(width: 12), const Text('TRADING MASTER', style: TextStyle(fontWeight: FontWeight.w900))]),
         actions: [IconButton(onPressed: () => openProfile(context), icon: user.photoURL == null ? const Icon(Icons.account_circle, color: AppColors.gray) : CircleAvatar(radius: 15, backgroundImage: NetworkImage(user.photoURL!)))],
       ),
       body: ListView(
@@ -1122,7 +1122,7 @@ class AppDrawer extends StatelessWidget {
       backgroundColor: AppColors.card,
       child: SafeArea(
         child: Column(children: [
-          const ListTile(leading: Icon(Icons.stacked_line_chart, color: AppColors.cyan), title: Text('TRADING MASTER', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20))),
+          ListTile(leading: Image.asset('assets/logo/logo.png', height: 32), title: const Text('TRADING MASTER', style: TextStyle(fontWeight: FontWeight.w900, fontSize: 20))),
           const Divider(color: Colors.white10),
           ListTile(leading: const Icon(Icons.dashboard, color: Colors.white), title: const Text('Dashboard Overview'), onTap: onDashboard),
           ListTile(leading: const Icon(Icons.public, color: AppColors.gray), title: const Text('Real Analyzer'), onTap: () { Navigator.pop(context); onReal(); }),

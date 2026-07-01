@@ -12,6 +12,7 @@ import math
 import json
 import re
 import inspect
+import base64
 from datetime import datetime, timezone, timedelta
 from zoneinfo import ZoneInfo
 from typing import List, Dict, Any, Optional
@@ -32,22 +33,42 @@ APP_TIMEZONE = os.getenv("APP_TIMEZONE", "Asia/Dhaka")
 ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "tradingmaster123")
 
 # Initialize Firebase
-service_account_json = os.getenv("FIREBASE_SERVICE_ACCOUNT")
-if service_account_json:
-    try:
-        sa_dict = json.loads(service_account_json)
-        cred = credentials.Certificate(sa_dict)
-        firebase_admin.initialize_app(cred)
-    except Exception as e:
-        print(f"Error initializing Firebase with service account: {e}")
-        firebase_admin.initialize_app()
-else:
-    try:
-        firebase_admin.initialize_app()
-    except Exception:
-        pass
+def init_firestore():
+    if firebase_admin._apps:
+        return firestore.client()
 
-db = firestore.client()
+    # Try B64 first (Best for Render)
+    b64_json = os.getenv("FIREBASE_SERVICE_ACCOUNT_B64")
+    if b64_json:
+        try:
+            decoded = base64.b64decode(b64_json).decode("utf-8")
+            cred_dict = json.loads(decoded)
+            cred = credentials.Certificate(cred_dict)
+            firebase_admin.initialize_app(cred)
+            return firestore.client()
+        except Exception as e:
+            print(f"Firebase B64 init error: {e}")
+
+    # Try Raw JSON (Second best)
+    raw_json = os.getenv("FIREBASE_SERVICE_ACCOUNT")
+    if raw_json:
+        try:
+            sa_dict = json.loads(raw_json)
+            cred = credentials.Certificate(sa_dict)
+            firebase_admin.initialize_app(cred)
+            return firestore.client()
+        except Exception as e:
+            print(f"Firebase Raw JSON init error: {e}")
+
+    # Fallback to ADC (Local development)
+    try:
+        firebase_admin.initialize_app()
+        return firestore.client()
+    except Exception as e:
+        print(f"Firebase default init failed: {e}")
+        return None
+
+db = init_firestore()
 
 app = FastAPI(title="TRADING MASTER API", version="2.0.0")
 

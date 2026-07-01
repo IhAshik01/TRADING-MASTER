@@ -17,21 +17,39 @@ from zoneinfo import ZoneInfo
 from typing import List, Dict, Any, Optional
 
 import httpx
+import firebase_admin
+from firebase_admin import credentials, firestore
 from dotenv import load_dotenv
-from fastapi import FastAPI, Query, UploadFile, File
+from fastapi import FastAPI, Query, UploadFile, File, Header, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import HTMLResponse
+from pydantic import BaseModel
 
 load_dotenv()
 
 TWELVEDATA_API_KEY = os.getenv("TWELVEDATA_API_KEY")
 APP_TIMEZONE = os.getenv("APP_TIMEZONE", "Asia/Dhaka")
+ADMIN_TOKEN = os.getenv("ADMIN_TOKEN", "tradingmaster123")
 
-QUOTEX_SSID_CACHE = {
-    "demo": None,
-    "live": None,
-}
+# Initialize Firebase
+service_account_json = os.getenv("FIREBASE_SERVICE_ACCOUNT")
+if service_account_json:
+    try:
+        sa_dict = json.loads(service_account_json)
+        cred = credentials.Certificate(sa_dict)
+        firebase_admin.initialize_app(cred)
+    except Exception as e:
+        print(f"Error initializing Firebase with service account: {e}")
+        firebase_admin.initialize_app()
+else:
+    try:
+        firebase_admin.initialize_app()
+    except Exception:
+        pass
 
-app = FastAPI(title="TRADING MASTER API", version="1.4.0")
+db = firestore.client()
+
+app = FastAPI(title="TRADING MASTER API", version="2.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -65,7 +83,6 @@ REAL_ASSETS = [
 ]
 
 OTC_ASSETS = [
-    # CURRENCIES
     "USDBRL_otc",
     "USDMXN_otc",
     "USDINR_otc",
@@ -88,7 +105,6 @@ OTC_ASSETS = [
     "EURNZD_otc",
     "NZDUSD_otc",
 
-    # Extra common forex OTC
     "EURUSD_otc",
     "GBPUSD_otc",
     "USDJPY_otc",
@@ -104,7 +120,6 @@ OTC_ASSETS = [
     "GBPCAD_otc",
     "GBPCHF_otc",
 
-    # CRYPTO
     "TRUMPUSD_otc",
     "DASHUSD_otc",
     "ETCUSD_otc",
@@ -122,13 +137,11 @@ OTC_ASSETS = [
     "AVAXUSD_otc",
     "AXSUSD_otc",
 
-    # COMMODITIES
     "UKBrent_otc",
     "XAGUSD_otc",
     "USCrude_otc",
     "XAUUSD_otc",
 
-    # STOCKS / INDICES
     "CAC40",
     "FTSE100",
     "ASX200",
@@ -140,7 +153,23 @@ OTC_ASSETS = [
 ]
 
 QUOTEX_ALIAS_MAP = {
-    # CURRENCIES
+    # Common Forex OTC
+    "EUR/USD (OTC)": "EURUSD_otc",
+    "GBP/USD (OTC)": "GBPUSD_otc",
+    "USD/JPY (OTC)": "USDJPY_otc",
+    "AUD/USD (OTC)": "AUDUSD_otc",
+    "USD/CAD (OTC)": "USDCAD_otc",
+    "USD/CHF (OTC)": "USDCHF_otc",
+    "EUR/JPY (OTC)": "EURJPY_otc",
+    "GBP/JPY (OTC)": "GBPJPY_otc",
+    "EUR/GBP (OTC)": "EURGBP_otc",
+    "EUR/CHF (OTC)": "EURCHF_otc",
+    "AUD/CAD (OTC)": "AUDCAD_otc",
+    "AUD/CHF (OTC)": "AUDCHF_otc",
+    "GBP/CAD (OTC)": "GBPCAD_otc",
+    "GBP/CHF (OTC)": "GBPCHF_otc",
+
+    # Other currencies
     "USD/BRL (OTC)": "USDBRL_otc",
     "USD/MXN (OTC)": "USDMXN_otc",
     "USD/INR (OTC)": "USDINR_otc",
@@ -163,7 +192,7 @@ QUOTEX_ALIAS_MAP = {
     "EUR/NZD (OTC)": "EURNZD_otc",
     "NZD/USD (OTC)": "NZDUSD_otc",
 
-    # CRYPTO
+    # Crypto
     "Trump (OTC)": "TRUMPUSD_otc",
     "Dash (OTC)": "DASHUSD_otc",
     "Ethereum Classic (OTC)": "ETCUSD_otc",
@@ -181,13 +210,13 @@ QUOTEX_ALIAS_MAP = {
     "Avalanche (OTC)": "AVAXUSD_otc",
     "Axie Infinity (OTC)": "AXSUSD_otc",
 
-    # COMMODITIES
+    # Commodities
     "UKBrent (OTC)": "UKBrent_otc",
     "Silver (OTC)": "XAGUSD_otc",
     "USCrude (OTC)": "USCrude_otc",
     "Gold (OTC)": "XAUUSD_otc",
 
-    # STOCKS
+    # Stocks / indices
     "CAC 40": "CAC40",
     "FTSE 100": "FTSE100",
     "S&P/ASX 200": "ASX200",
@@ -197,6 +226,201 @@ QUOTEX_ALIAS_MAP = {
     "Hong Kong 50": "HK50",
     "IBEX 35": "IBEX35",
 }
+
+def require_admin_token(x_admin_token: str = Header(default="")):
+    if x_admin_token != ADMIN_TOKEN:
+        raise HTTPException(status_code=401, detail="Invalid admin token")
+
+
+# ============================================================
+# PERSISTENT MODELS & HELPERS
+# ============================================================
+
+class OtcCandleIn(BaseModel):
+    time: str
+    open: float
+    high: float
+    low: float
+    close: float
+
+
+class OtcPushCandlesRequest(BaseModel):
+    symbol: str
+    timeframe: str = "1m"
+    candles: List[OtcCandleIn]
+
+
+class OtcPairStatItem(BaseModel):
+    symbol: str
+    label: Optional[str] = None
+    profit_1m: Optional[int] = 0
+    profit_5m: Optional[int] = 0
+    change: Optional[float] = 0.0
+    price: Optional[float] = None
+
+
+class OtcPushPairsRequest(BaseModel):
+    items: List[OtcPairStatItem]
+
+
+def _compact_asset_key(value: str) -> str:
+    return re.sub(r"[^A-Za-z0-9]", "", value or "").lower()
+
+
+def _build_asset_lookup():
+    lookup = {}
+    for asset in OTC_ASSETS + REAL_ASSETS:
+        lookup[_compact_asset_key(asset)] = asset
+    for label, actual in QUOTEX_ALIAS_MAP.items():
+        lookup[_compact_asset_key(label)] = actual
+        lookup[_compact_asset_key(actual)] = actual
+    return lookup
+
+
+ASSET_LOOKUP = _build_asset_lookup()
+
+
+def normalize_otc_symbol(symbol: str) -> str:
+    s = (symbol or "").strip()
+    if not s: return s
+    if s in OTC_ASSETS or s in REAL_ASSETS: return s
+    if s in QUOTEX_ALIAS_MAP: return QUOTEX_ALIAS_MAP[s]
+    key = _compact_asset_key(s)
+    if key in ASSET_LOOKUP: return ASSET_LOOKUP[key]
+    if s.lower().endswith("_otc"):
+        base = re.sub(r"[^A-Za-z0-9]", "", s[:-4]).upper()
+        return f"{base}_otc"
+    cleaned = re.sub(r"[^A-Za-z0-9]", "", s).upper()
+    if len(cleaned) == 6:
+        guess = f"{cleaned}_otc"
+        if guess in OTC_ASSETS: return guess
+    return s
+
+
+def parse_iso_time(value: str) -> datetime:
+    try:
+        if value.endswith("Z"):
+            return datetime.fromisoformat(value.replace("Z", "+00:00"))
+        dt = datetime.fromisoformat(value)
+        if dt.tzinfo is None:
+            return dt.replace(tzinfo=timezone.utc)
+        return dt.astimezone(timezone.utc)
+    except Exception:
+        return datetime.now(timezone.utc)
+
+
+def timeframe_seconds(timeframe: str) -> int:
+    tf = timeframe.lower().strip()
+    if tf in ["5m", "5min", "5"]: return 300
+    return 60
+
+
+def normalize_timeframe(timeframe: str) -> str:
+    tf = timeframe.lower().strip()
+    if tf in ["5m", "5min", "5"]: return "5m"
+    return "1m"
+
+
+def aggregate_candles(source_candles: List[Dict[str, Any]], target_tf: str) -> List[Dict[str, Any]]:
+    if not source_candles: return []
+    seconds = timeframe_seconds(target_tf)
+    buckets: Dict[int, List[Dict[str, Any]]] = {}
+    for c in source_candles:
+        dt = parse_iso_time(str(c["time"]))
+        bucket = int(dt.timestamp()) // seconds * seconds
+        buckets.setdefault(bucket, []).append(c)
+    out = []
+    for bucket in sorted(buckets.keys()):
+        group = sorted(buckets[bucket], key=lambda x: parse_iso_time(str(x["time"])))
+        out.append({
+            "time": datetime.fromtimestamp(bucket, tz=timezone.utc).isoformat(),
+            "open": float(group[0]["open"]),
+            "high": max(float(x["high"]) for x in group),
+            "low": min(float(x["low"]) for x in group),
+            "close": float(group[-1]["close"]),
+        })
+    return out
+
+
+# ============================================================
+# OTC CACHE / PUSH FEED (Firestore Persistent)
+# ============================================================
+
+def store_otc_candles(symbol: str, timeframe: str, candles: List[Dict[str, Any]], max_len: int = 500):
+    symbol = normalize_otc_symbol(symbol)
+    timeframe = normalize_timeframe(timeframe)
+
+    doc_ref = db.collection("otc_data").document("candles").collection(symbol).document(timeframe)
+    doc = doc_ref.get()
+
+    existing = []
+    if doc.exists:
+        existing = doc.to_dict().get("candles", [])
+
+    merged = existing + candles
+
+    dedup = {}
+    for c in merged:
+        dedup[str(c["time"])] = {
+            "time": str(c["time"]),
+            "open": float(c["open"]),
+            "high": float(c["high"]),
+            "low": float(c["low"]),
+            "close": float(c["close"]),
+        }
+
+    ordered = sorted(
+        dedup.values(),
+        key=lambda x: parse_iso_time(str(x["time"]))
+    )
+
+    doc_ref.set({"candles": ordered[-max_len:]})
+
+
+def get_cached_otc_candles(symbol: str, timeframe: str, min_count: int = 10) -> List[Dict[str, Any]]:
+    symbol = normalize_otc_symbol(symbol)
+    timeframe = normalize_timeframe(timeframe)
+
+    doc_ref = db.collection("otc_data").document("candles").collection(symbol).document(timeframe)
+    doc = doc_ref.get()
+
+    if doc.exists:
+        candles = doc.to_dict().get("candles", [])
+        if len(candles) >= min_count:
+            return candles[-120:]
+
+    # Build 5m from 1m if needed
+    if timeframe == "5m":
+        one_min_ref = db.collection("otc_data").document("candles").collection(symbol).document("1m")
+        one_min_doc = one_min_ref.get()
+        if one_min_doc.exists:
+            one_min = one_min_doc.to_dict().get("candles", [])
+            agg = aggregate_candles(one_min, "5m")
+            if len(agg) >= min_count:
+                return agg[-120:]
+
+    raise Exception(f"No OTC cache or not enough data found for {symbol} ({timeframe}) in Firestore")
+
+
+def label_for_otc_asset(asset_symbol: str) -> str:
+    for label, actual in QUOTEX_ALIAS_MAP.items():
+        if actual == asset_symbol:
+            return label
+    return asset_symbol
+
+
+def default_otc_pair_stats():
+    out = {}
+    for symbol in OTC_ASSETS:
+        out[symbol] = {
+            "label": label_for_otc_asset(symbol),
+            "symbol": symbol,
+            "profit_1m": 0,
+            "profit_5m": 0,
+            "change": 0.0,
+            "price": None,
+        }
+    return out
 
 
 # ============================================================
@@ -212,47 +436,36 @@ def get_app_timezone():
 
 def normalize_symbol(symbol: str) -> str:
     s = symbol.upper().strip().replace("-", "/").replace(" ", "")
-
     if "/" in s:
         return s
-
     if len(s) == 6:
         return f"{s[:3]}/{s[3:]}"
-
     return symbol
 
 
 def tf_interval(timeframe: str) -> str:
     timeframe = timeframe.lower().strip()
-
     if timeframe in ["1m", "1min", "1"]:
         return "1min"
-
     if timeframe in ["5m", "5min", "5"]:
         return "5min"
-
     return "1min"
 
 
 def tf_seconds(timeframe: str) -> int:
     timeframe = timeframe.lower().strip()
-
     if timeframe in ["5m", "5min", "5"]:
         return 300
-
     return 60
 
 
 def next_entry(timeframe: str) -> Dict[str, Any]:
     seconds = tf_seconds(timeframe)
-
     now = datetime.now(timezone.utc)
     now_ts = now.timestamp()
-
     entry_ts = math.floor(now_ts / seconds) * seconds + seconds
     entry_utc = datetime.fromtimestamp(entry_ts, tz=timezone.utc)
     expiry_utc = entry_utc + timedelta(seconds=seconds)
-
     tz = get_app_timezone()
 
     return {
@@ -274,15 +487,12 @@ def clamp_number(value: float, minimum: float, maximum: float) -> float:
 def ema(values: List[float], period: int) -> List[float]:
     if not values:
         return []
-
     k = 2 / (period + 1)
     result = []
     current = values[0]
-
     for value in values:
         current = value * k + current * (1 - k)
         result.append(current)
-
     return result
 
 
@@ -310,15 +520,10 @@ def rsi(closes: List[float], period: int = 14) -> float:
 
 def macd(closes: List[float]) -> Dict[str, float]:
     if len(closes) < 35:
-        return {
-            "macd": 0.0,
-            "signal": 0.0,
-            "histogram": 0.0,
-        }
+        return {"macd": 0.0, "signal": 0.0, "histogram": 0.0}
 
     ema12 = ema(closes, 12)
     ema26 = ema(closes, 26)
-
     macd_line = [a - b for a, b in zip(ema12, ema26)]
     signal_line = ema(macd_line, 9)
 
@@ -332,20 +537,42 @@ def macd(closes: List[float]) -> Dict[str, float]:
     }
 
 
+def adx(highs, lows, closes, period=14):
+    if len(closes) < period * 2:
+        return 20.0
+
+    up_moves = [highs[i] - highs[i - 1] for i in range(1, len(highs))]
+    down_moves = [lows[i - 1] - lows[i] for i in range(1, len(lows))]
+
+    pos_dm = [max(m, 0) if m > down_moves[i] else 0 for i, m in enumerate(up_moves)]
+    neg_dm = [max(m, 0) if m > up_moves[i] else 0 for i, m in enumerate(down_moves)]
+
+    return clamp_number(20 + (sum(pos_dm[-5:]) - sum(neg_dm[-5:])) * 2, 0, 100)
+
+
+def atr(highs, lows, closes, period=14):
+    if len(closes) < period:
+        return 0.0001
+    tr_list = []
+    for i in range(1, len(closes)):
+        tr = max(
+            highs[i] - lows[i],
+            abs(highs[i] - closes[i - 1]),
+            abs(lows[i] - closes[i - 1]),
+        )
+        tr_list.append(tr)
+    return sum(tr_list[-period:]) / period
+
+
 # ============================================================
-# TWELVEDATA REAL PROVIDER
+# MARKET DATA PROVIDERS
 # ============================================================
 
-async def get_twelvedata_candles(
-    symbol: str,
-    timeframe: str,
-    outputsize: int = 120,
-) -> List[Dict[str, Any]]:
+async def get_twelvedata_candles(symbol: str, timeframe: str, outputsize: int = 120) -> List[Dict[str, Any]]:
     if not TWELVEDATA_API_KEY:
         raise Exception("TWELVEDATA_API_KEY missing in .env")
 
     url = "https://api.twelvedata.com/time_series"
-
     params = {
         "symbol": normalize_symbol(symbol),
         "interval": tf_interval(timeframe),
@@ -364,12 +591,10 @@ async def get_twelvedata_candles(
         raise Exception(data.get("message", "TwelveData API error"))
 
     values = data.get("values", [])
-
     if not values:
         raise Exception(f"No candle data returned for {symbol}")
 
     candles = []
-
     for item in reversed(values):
         candles.append(
             {
@@ -380,364 +605,21 @@ async def get_twelvedata_candles(
                 "close": float(item["close"]),
             }
         )
-
     return candles
 
 
-# ============================================================
-# QUOTEX PROVIDER
-# ============================================================
-
-def quotex_timeframe_seconds(timeframe: str) -> int:
-    timeframe = timeframe.lower().strip()
-
-    if timeframe in ["5m", "5min", "5"]:
-        return 300
-
-    return 60
-
-
-def normalize_quotex_asset(symbol: str) -> str:
-    s = symbol.strip()
-
-    if s in QUOTEX_ALIAS_MAP:
-        return QUOTEX_ALIAS_MAP[s]
-
-    def compact(value: str) -> str:
-        return (
-            value.upper()
-            .replace("/", "")
-            .replace("-", "")
-            .replace(" ", "")
-            .replace("(", "")
-            .replace(")", "")
-        )
-
-    compact_input = compact(s)
-
-    for label, actual in QUOTEX_ALIAS_MAP.items():
-        if compact(label) == compact_input:
-            return actual
-
-    if s.endswith("_otc"):
-        return s
-
-    known_non_otc = {
-        "CAC40",
-        "FTSE100",
-        "ASX200",
-        "Nikkei225",
-        "EuroStoxx50",
-        "ChinaA50",
-        "HK50",
-        "IBEX35",
-    }
-
-    if s in known_non_otc:
-        return s
-
-    s = s.upper().replace("/", "").replace("-", "").replace(" ", "")
-
-    return f"{s}_otc"
-
-
-def quotex_is_demo() -> bool:
-    return os.getenv("QUOTEX_IS_DEMO", "true").lower() == "true"
-
-
-def quotex_env_ssid(is_demo: bool) -> Optional[str]:
-    value = os.getenv("QUOTEX_SSID_DEMO") if is_demo else os.getenv("QUOTEX_SSID_LIVE")
-
-    if value and value.strip():
-        return value.strip()
-
-    return None
-
-
-async def quotex_maybe_await(value):
-    if inspect.isawaitable(value):
-        return await value
-    return value
-
-
-async def quotex_get_ssid(is_demo: bool):
-    cache_key = "demo" if is_demo else "live"
-
-    if QUOTEX_SSID_CACHE.get(cache_key):
-        return QUOTEX_SSID_CACHE[cache_key]
-
-    env_ssid = quotex_env_ssid(is_demo)
-
-    if env_ssid:
-        QUOTEX_SSID_CACHE[cache_key] = env_ssid
-        return env_ssid
-
-    email = os.getenv("QUOTEX_EMAIL")
-    password = os.getenv("QUOTEX_PASSWORD")
-
-    if not email or not password:
-        raise Exception("Missing Quotex SSID or QUOTEX_EMAIL/QUOTEX_PASSWORD in .env")
-
-    from api_quotex import get_ssid
-
-    try:
-        result = get_ssid(email=email, password=password)
-    except TypeError:
-        result = get_ssid(email, password)
-
-    result = await quotex_maybe_await(result)
-
-    ssid = None
-
-    if isinstance(result, dict):
-        ssid = result.get("demo") if is_demo else result.get("live")
-
-        if not ssid:
-            ssid = result.get("ssid")
-
-        if not ssid and result.get("token"):
-            demo_flag = 1 if is_demo else 0
-            token = result.get("token")
-            ssid = f'42["authorization",{{"session":"{token}","isDemo":{demo_flag},"tournamentId":0}}]'
-
-    elif isinstance(result, tuple) and len(result) >= 2:
-        success = result[0]
-        data = result[1]
-
-        if success and isinstance(data, dict):
-            ssid = data.get("ssid")
-
-            if not ssid and data.get("token"):
-                demo_flag = 1 if data.get("is_demo", is_demo) else 0
-                token = data.get("token")
-                ssid = f'42["authorization",{{"session":"{token}","isDemo":{demo_flag},"tournamentId":0}}]'
-
-    elif isinstance(result, str):
-        ssid = result
-
-    if not ssid:
-        raise Exception("Could not get Quotex SSID")
-
-    QUOTEX_SSID_CACHE[cache_key] = ssid
-
-    return ssid
-
-
-def quotex_row_value(row, keys, default=None):
-    if isinstance(row, dict):
-        lower_map = {str(k).lower(): v for k, v in row.items()}
-
-        for key in keys:
-            if key.lower() in lower_map:
-                return lower_map[key.lower()]
-
-    for key in keys:
-        if hasattr(row, key):
-            return getattr(row, key)
-
-    return default
-
-
-def parse_quotex_candles(raw_data, outputsize: int = 120):
-    rows = []
-
-    if hasattr(raw_data, "to_dict") and hasattr(raw_data, "columns"):
-        rows = raw_data.to_dict("records")
-
-    elif isinstance(raw_data, dict):
-        if isinstance(raw_data.get("candles"), list):
-            rows = raw_data["candles"]
-        elif isinstance(raw_data.get("data"), list):
-            rows = raw_data["data"]
-        elif isinstance(raw_data.get("values"), list):
-            rows = raw_data["values"]
-        else:
-            rows = [raw_data]
-
-    elif isinstance(raw_data, list):
-        rows = raw_data
-
-    candles = []
-
-    for row in rows:
-        try:
-            if hasattr(row, "model_dump"):
-                row = row.model_dump()
-            elif hasattr(row, "dict"):
-                row = row.dict()
-
-            if isinstance(row, dict) or hasattr(row, "__dict__"):
-                time_value = quotex_row_value(
-                    row,
-                    ["time", "datetime", "timestamp", "from", "at", "created_at"],
-                    datetime.now(timezone.utc).isoformat(),
-                )
-
-                open_value = quotex_row_value(row, ["open", "o"])
-                close_value = quotex_row_value(row, ["close", "c"])
-                high_value = quotex_row_value(row, ["high", "max", "h"])
-                low_value = quotex_row_value(row, ["low", "min", "l"])
-
-                if open_value is None or close_value is None:
-                    continue
-
-                open_float = float(open_value)
-                close_float = float(close_value)
-
-                high_float = (
-                    float(high_value)
-                    if high_value is not None
-                    else max(open_float, close_float)
-                )
-
-                low_float = (
-                    float(low_value)
-                    if low_value is not None
-                    else min(open_float, close_float)
-                )
-
-            elif isinstance(row, (list, tuple)) and len(row) >= 5:
-                time_value = row[0]
-                open_float = float(row[1])
-                high_float = float(row[2])
-                low_float = float(row[3])
-                close_float = float(row[4])
-
-            else:
-                continue
-
-            candles.append(
-                {
-                    "time": str(time_value),
-                    "open": open_float,
-                    "high": high_float,
-                    "low": low_float,
-                    "close": close_float,
-                }
-            )
-
-        except Exception:
-            continue
-
-    return candles[-outputsize:]
-
-
-async def quotex_call_candle_method(client, asset: str, period: int, outputsize: int):
-    errors = []
-
-    if hasattr(client, "get_candles"):
-        try:
-            result = client.get_candles(asset=asset, timeframe=period, count=outputsize)
-            result = await quotex_maybe_await(result)
-            candles = parse_quotex_candles(result, outputsize=outputsize)
-
-            if len(candles) >= min(40, outputsize):
-                return candles
-
-            errors.append(f"get_candles parsed only {len(candles)} candles")
-        except Exception as e:
-            errors.append(f"get_candles error: {repr(e)}")
-
-    if hasattr(client, "get_candles_dataframe"):
-        try:
-            result = client.get_candles_dataframe(asset=asset, timeframe=period, count=outputsize)
-            result = await quotex_maybe_await(result)
-            candles = parse_quotex_candles(result, outputsize=outputsize)
-
-            if len(candles) >= min(40, outputsize):
-                return candles
-
-            errors.append(f"get_candles_dataframe parsed only {len(candles)} candles")
-        except Exception as e:
-            errors.append(f"get_candles_dataframe error: {repr(e)}")
-
-    raise Exception("Could not fetch Quotex candles: " + " | ".join(errors))
-
-
-class QuotexManager:
-    """Manages a persistent Quotex connection to avoid slow connect/disconnect cycles."""
-    def __init__(self):
-        self.client = None
-        self.last_ssid = None
-        self.is_connecting = False
-        self.lock = asyncio.Lock()
-
-    async def get_client(self, ssid: str, is_demo: bool):
-        async with self.lock:
-            # Strip any accidental spaces/quotes
-            ssid = ssid.strip().strip("'").strip('"')
-
-            if self.client is None or self.last_ssid != ssid:
-                if self.client:
-                    try: await quotex_maybe_await(self.client.disconnect())
-                    except: pass
-
-                print(f"DEBUG: Connecting with token {ssid[:4]}...{ssid[-4:]}")
-                from api_quotex import AsyncQuotexClient
-                self.client = AsyncQuotexClient(ssid=ssid, is_demo=is_demo)
-                self.last_ssid = ssid
-
-                try:
-                    connected = await asyncio.wait_for(quotex_maybe_await(self.client.connect()), timeout=55)
-                    if not connected:
-                        self.client = None
-                        raise Exception("Connection Refused. Refresh SSID.")
-                    print("DEBUG: Connected to Quotex successfully.")
-                except Exception as e:
-                    self.client = None
-                    raise Exception(f"Handshake Failed: {e}")
-            return self.client
-
-QUOTEX_MANAGER = QuotexManager()
-
-async def get_quotex_candles(asset: str, timeframe: str, outputsize: int = 120):
-    if os.getenv("QUOTEX_ENABLED", "false").lower() != "true":
-        raise Exception("QUOTEX_ENABLED is not true in .env")
-
-    is_demo = quotex_is_demo()
-    ssid = await quotex_get_ssid(is_demo)
-
-    # Clean SSID
-    ssid = ssid.strip()
-    if (ssid.startswith("'") and ssid.endswith("'")) or (ssid.startswith('"') and ssid.endswith('"')):
-        ssid = ssid[1:-1]
-    ssid = ssid.replace("\\'", "'").replace('\\"', '"')
-
-    asset = normalize_quotex_asset(asset)
-    period = quotex_timeframe_seconds(timeframe)
-
-    try:
-        client = await QUOTEX_MANAGER.get_client(ssid, is_demo)
-
-        print(f"DEBUG: Fetching {outputsize} candles for {asset}...")
-        try:
-            # Try up to 3 times to get candles if the connection is established
-            for attempt in range(3):
-                try:
-                    candles = await asyncio.wait_for(
-                        quotex_call_candle_method(client, asset, period, outputsize),
-                        timeout=20
-                    )
-                    if candles and len(candles) >= 40:
-                        print(f"DEBUG: Success! Got {len(candles)} candles on attempt {attempt+1}")
-                        return candles
-                except Exception as e:
-                    print(f"DEBUG: Candle fetch attempt {attempt+1} failed: {e}")
-                    if attempt < 2:
-                        await asyncio.sleep(2)
-
-            raise Exception("Failed to fetch candles after multiple attempts")
-
-        except asyncio.TimeoutError:
-            raise Exception("Timed out while fetching candle data (20s)")
-
-    except Exception as e:
-        # Reset manager on fatal error to force reconnect next time
-        QUOTEX_MANAGER.client = None
-        raise e
-
-
-
+async def fetch_candles_for_market(market_type: str, symbol: str, timeframe: str, outputsize: int = 120):
+    mt = market_type.lower().strip()
+
+    if mt == "otc":
+        candles = get_cached_otc_candles(symbol, timeframe, min_count=10)
+        return candles[-outputsize:]
+
+    return await get_twelvedata_candles(
+        symbol=symbol,
+        timeframe=timeframe,
+        outputsize=outputsize,
+    )
 
 
 # ============================================================
@@ -750,6 +632,7 @@ def neutral_response(market_type: str, symbol: str, timeframe: str, reason: str)
     return {
         "app": "TRADING MASTER",
         "market_type": market_type.upper(),
+        "source": "cache" if market_type.upper() == "OTC" else "twelvedata",
         "symbol": symbol,
         "timeframe": timeframe,
         "signal": "NEUTRAL",
@@ -759,327 +642,251 @@ def neutral_response(market_type: str, symbol: str, timeframe: str, reason: str)
         "expiry_time": entry["expiry_time"],
         "countdown_seconds": entry["countdown_seconds"],
         "timezone": entry["timezone"],
+        "recommended_expiry": "1 min",
         "price": None,
+        "features": [],
         "indicators": {},
+        "strategy": {
+            "name": "TRADING MASTER AI PRO",
+            "indicators_used": [],
+            "detected_patterns": [],
+            "detected_blends": [],
+        },
         "reason": [reason],
+        "chart": {
+            "closes": [],
+            "opens": [],
+            "highs": [],
+            "lows": [],
+        },
         "disclaimer": "Signals are analysis only, not guaranteed financial advice.",
     }
 
 
+def get_metrics(c, p=None):
+    o, h, l, cl = float(c["open"]), float(c["high"]), float(c["low"]), float(c["close"])
+    body = abs(cl - o)
+    tr = max(h - l, 0.000001)
+    up = h - max(o, cl)
+    lo = min(o, cl) - l
+    is_bull = cl > o
+    is_bear = cl < o
+    doji = body / tr < 0.1
+    return {
+        "o": o, "h": h, "l": l, "cl": cl,
+        "body": body, "tr": tr, "up": up, "lo": lo,
+        "bull": is_bull, "bear": is_bear, "doji": doji
+    }
+
+
+def detect_all_patterns(candles):
+    if len(candles) < 5:
+        return []
+
+    m = [get_metrics(candles[i]) for i in range(-5, 0)]
+    c1, c2, c3 = m[-1], m[-2], m[-3]
+    pats = []
+
+    if c1["doji"]:
+        if c1["lo"] > 0.65 * c1["tr"] and c1["up"] < 0.1 * c1["tr"]:
+            pats.append({"name": "Dragonfly Doji", "dir": "BUY", "q": 0.8})
+        elif c1["up"] > 0.65 * c1["tr"] and c1["lo"] < 0.1 * c1["tr"]:
+            pats.append({"name": "Gravestone Doji", "dir": "SELL", "q": 0.8})
+        else:
+            pats.append({"name": "Doji", "dir": "NEUTRAL", "q": 0.5})
+
+    if c1["lo"] >= 2 * c1["body"] and c1["up"] <= 0.1 * c1["tr"] and c1["body"] > 0:
+        pats.append({"name": "Hammer", "dir": "BUY", "q": 0.85})
+
+    if c1["up"] >= 2 * c1["body"] and c1["lo"] <= 0.1 * c1["tr"] and c1["body"] > 0:
+        pats.append({"name": "Shooting Star", "dir": "SELL", "q": 0.85})
+
+    if c1["body"] >= 0.9 * c1["tr"]:
+        pats.append({"name": "Marubozu", "dir": "BUY" if c1["bull"] else "SELL", "q": 0.9})
+
+    if c2["bear"] and c1["bull"] and c1["cl"] > c2["o"] and c1["o"] < c2["cl"]:
+        pats.append({"name": "Bullish Engulfing", "dir": "BUY", "q": 0.92})
+
+    if c2["bull"] and c1["bear"] and c1["cl"] < c2["o"] and c1["o"] > c2["cl"]:
+        pats.append({"name": "Bearish Engulfing", "dir": "SELL", "q": 0.92})
+
+    if c2["bear"] and c1["bull"] and c1["o"] < c2["cl"] and c1["cl"] > (c2["o"] + c2["cl"]) / 2:
+        pats.append({"name": "Piercing Line", "dir": "BUY", "q": 0.82})
+
+    if c2["bull"] and c1["bear"] and c1["o"] > c2["cl"] and c1["cl"] < (c2["o"] + c2["cl"]) / 2:
+        pats.append({"name": "Dark Cloud Cover", "dir": "SELL", "q": 0.82})
+
+    if c2["bear"] and c1["bull"] and c1["o"] > c2["cl"] and c1["cl"] < c2["o"]:
+        pats.append({"name": "Bullish Harami", "dir": "BUY", "q": 0.75})
+
+    if c2["bull"] and c1["bear"] and c1["o"] < c2["cl"] and c1["cl"] > c2["o"]:
+        pats.append({"name": "Bearish Harami", "dir": "SELL", "q": 0.75})
+
+    if c3["bear"] and c1["bull"] and c2["body"] < c3["body"] * 0.3 and c1["cl"] > (c3["o"] + c3["cl"]) / 2:
+        pats.append({"name": "Morning Star", "dir": "BUY", "q": 0.94})
+
+    if c3["bull"] and c1["bear"] and c2["body"] < c3["body"] * 0.3 and c1["cl"] < (c3["o"] + c3["cl"]) / 2:
+        pats.append({"name": "Evening Star", "dir": "SELL", "q": 0.94})
+
+    if c1["bull"] and c2["bull"] and c3["bull"] and c1["cl"] > c2["cl"] > c3["cl"]:
+        pats.append({"name": "Three White Soldiers", "dir": "BUY", "q": 0.96})
+
+    if c1["bear"] and c2["bear"] and c3["bear"] and c1["cl"] < c2["cl"] < c3["cl"]:
+        pats.append({"name": "Three Black Crows", "dir": "SELL", "q": 0.96})
+
+    return pats
+
+
+def detect_blends(pats):
+    blends = []
+    names = [p["name"] for p in pats]
+
+    if "Hammer" in names and "Bullish Engulfing" in names:
+        blends.append({"name": "Hammer + Bullish Engulfing", "dir": "BUY", "q": 0.98})
+
+    if "Doji" in names and "Morning Star" in names:
+        blends.append({"name": "Doji Morning Star", "dir": "BUY", "q": 0.97})
+
+    if "Shooting Star" in names and "Bearish Engulfing" in names:
+        blends.append({"name": "Shooting Star + Bearish Engulfing", "dir": "SELL", "q": 0.98})
+
+    return blends
+
+
+def recommend_expiry_logic(atr_val, timeframe, price):
+    if atr_val > (price * 0.001):
+        return "1-2 min"
+    return "3-5 min"
+
+
 def analyze(candles: List[Dict[str, Any]], market_type: str, symbol: str, timeframe: str):
-    if len(candles) < 40:
-        return neutral_response(market_type, symbol, timeframe, "Not enough candles for analysis.")
+    if len(candles) < 50:
+        return neutral_response(market_type, symbol, timeframe, "Not enough candles.")
 
-    try:
-        closes = [float(c["close"]) for c in candles]
-        opens = [float(c["open"]) for c in candles]
-        highs = [float(c["high"]) for c in candles]
-        lows = [float(c["low"]) for c in candles]
-    except Exception:
-        return neutral_response(market_type, symbol, timeframe, "Invalid candle format.")
+    closes = [float(c["close"]) for c in candles]
+    opens = [float(c["open"]) for c in candles]
+    highs = [float(c["high"]) for c in candles]
+    lows = [float(c["low"]) for c in candles]
 
-    close = closes[-1]
-    open_price = opens[-1]
+    rsi_val = rsi(closes)
+    atr_val = atr(highs, lows, closes)
+    adx_val = adx(highs, lows, closes)
+    macd_res = macd(closes)
 
-    ema9_series = ema(closes, 9)
-    ema21_series = ema(closes, 21)
+    ema9 = ema(closes, 9)
+    ema21 = ema(closes, 21)
+    ema50 = ema(closes, 50)
 
-    ema9_value = ema9_series[-1]
-    ema21_value = ema21_series[-1]
-    rsi_value = rsi(closes)
-    macd_value = macd(closes)
+    found_pats = detect_all_patterns(candles)
+    found_blends = detect_blends(found_pats)
 
-    score = 0
+    bull_score = 0.0
+    bear_score = 0.0
     reasons = []
 
-    recent_ranges = []
+    if rsi_val < 30:
+        bull_score += 15
+        reasons.append("RSI Oversold (Bullish)")
 
-    for i in range(-10, 0):
-        candle_range = highs[i] - lows[i]
-        body_range = abs(closes[i] - opens[i])
-        recent_ranges.append(max(candle_range, body_range))
+    if rsi_val > 70:
+        bear_score += 15
+        reasons.append("RSI Overbought (Bearish)")
 
-    avg_range = sum(recent_ranges) / len(recent_ranges)
+    if macd_res["histogram"] > 0:
+        bull_score += 10
+        reasons.append("MACD Bullish Momentum")
 
-    if avg_range <= 0:
-        return neutral_response(market_type, symbol, timeframe, "No useful volatility detected. Candle data may be flat.")
+    if macd_res["histogram"] < 0:
+        bear_score += 10
+        reasons.append("MACD Bearish Momentum")
 
-    if close > ema9_value and ema9_value >= ema21_value:
-        score += 22
-        reasons.append("EMA trend bullish")
-    elif close < ema9_value and ema9_value <= ema21_value:
-        score -= 22
-        reasons.append("EMA trend bearish")
-    elif close > ema21_value:
-        score += 8
-        reasons.append("Price above EMA21")
-    elif close < ema21_value:
-        score -= 8
-        reasons.append("Price below EMA21")
+    for p in found_pats:
+        reasons.append(f"Pattern: {p['name']}")
+        if p["dir"] == "BUY":
+            bull_score += p["q"] * 25
+        elif p["dir"] == "SELL":
+            bear_score += p["q"] * 25
+
+    for b in found_blends:
+        reasons.append(f"🔥 BLEND: {b['name']}")
+        if b["dir"] == "BUY":
+            bull_score += b["q"] * 35
+        elif b["dir"] == "SELL":
+            bear_score += b["q"] * 35
+
+    diff = abs(bull_score - bear_score)
+    score = bull_score - bear_score
+
+    if diff < 15:
+        signal_val = "NEUTRAL"
+        conf = 50 + diff
+    elif bull_score > bear_score:
+        signal_val = "CALL"
+        conf = clamp_number(60 + bull_score, 65, 98)
     else:
-        reasons.append("EMA trend mixed")
+        signal_val = "PUT"
+        conf = clamp_number(60 + bear_score, 65, 98)
 
-    ema9_slope = ema9_series[-1] - ema9_series[-5]
+    price = closes[-1]
+    candle_range = highs[-1] - lows[-1] if highs[-1] > lows[-1] else 0.0001
 
-    if ema9_slope > 0:
-        score += 10
-        reasons.append("EMA slope bullish")
-    elif ema9_slope < 0:
-        score -= 10
-        reasons.append("EMA slope bearish")
-    else:
-        reasons.append("EMA slope flat")
+    features = [
+        bull_score / 100.0,
+        bear_score / 100.0,
+        rsi_val / 100.0,
+        adx_val / 100.0,
+        atr_val / price if price > 0 else 0,
+        macd_res["histogram"] / price if price > 0 else 0,
+        (price - ema9[-1]) / price if price > 0 else 0,
+        (price - ema21[-1]) / price if price > 0 else 0,
+        (price - ema50[-1]) / price if price > 0 else 0,
+        (closes[-1] - opens[-1]) / candle_range,
+    ]
 
-    if 57 <= rsi_value <= 75:
-        score += 14
-        reasons.append("RSI bullish")
-    elif 50 < rsi_value < 57:
-        score += 6
-        reasons.append("RSI slightly bullish")
-    elif 25 <= rsi_value <= 43:
-        score -= 14
-        reasons.append("RSI bearish")
-    elif 43 < rsi_value < 50:
-        score -= 6
-        reasons.append("RSI slightly bearish")
-    elif rsi_value > 75:
-        score -= 8
-        reasons.append("RSI overbought warning")
-    elif rsi_value < 25:
-        score += 8
-        reasons.append("RSI oversold warning")
-    else:
-        reasons.append("RSI neutral")
-
-    if macd_value["histogram"] > 0:
-        score += 16
-        reasons.append("MACD bullish")
-    elif macd_value["histogram"] < 0:
-        score -= 16
-        reasons.append("MACD bearish")
-    else:
-        reasons.append("MACD neutral")
-
-    if close > open_price:
-        score += 8
-        reasons.append("Last candle bullish")
-    elif close < open_price:
-        score -= 8
-        reasons.append("Last candle bearish")
-    else:
-        reasons.append("Last candle neutral")
-
-    last_range = max(highs[-1] - lows[-1], abs(close - open_price))
-
-    if last_range > 0:
-        body_ratio = abs(close - open_price) / last_range
-
-        if body_ratio >= 0.55 and close > open_price:
-            score += 8
-            reasons.append("Strong bullish candle body")
-        elif body_ratio >= 0.55 and close < open_price:
-            score -= 8
-            reasons.append("Strong bearish candle body")
-        else:
-            reasons.append("Weak candle body")
-
-    change_3 = closes[-1] - closes[-4]
-    change_5 = closes[-1] - closes[-6]
-
-    if change_3 > 0:
-        score += 10
-        reasons.append("3-candle momentum bullish")
-    elif change_3 < 0:
-        score -= 10
-        reasons.append("3-candle momentum bearish")
-    else:
-        reasons.append("3-candle momentum flat")
-
-    if change_5 > 0:
-        score += 8
-        reasons.append("5-candle momentum bullish")
-    elif change_5 < 0:
-        score -= 8
-        reasons.append("5-candle momentum bearish")
-    else:
-        reasons.append("5-candle momentum flat")
-
-    bullish_count = 0
-    bearish_count = 0
-
-    for i in range(-5, 0):
-        if closes[i] > opens[i]:
-            bullish_count += 1
-        elif closes[i] < opens[i]:
-            bearish_count += 1
-
-    if bullish_count >= 4:
-        score += 8
-        reasons.append("Bullish candle pressure")
-    elif bearish_count >= 4:
-        score -= 8
-        reasons.append("Bearish candle pressure")
-    else:
-        reasons.append("Candle pressure mixed")
-
-    previous_high = max(highs[-12:-1])
-    previous_low = min(lows[-12:-1])
-
-    if close > previous_high:
-        score += 8
-        reasons.append("Minor bullish breakout")
-    elif close < previous_low:
-        score -= 8
-        reasons.append("Minor bearish breakout")
-
-    market_upper = market_type.upper()
-
-    if market_upper == "OTC":
-        signal_threshold = 28
-    else:
-        signal_threshold = 35
-
-    if score >= signal_threshold:
-        signal_value = "CALL"
-        confidence = clamp_number(58 + abs(score) * 0.55, 65, 94)
-    elif score <= -signal_threshold:
-        signal_value = "PUT"
-        confidence = clamp_number(58 + abs(score) * 0.55, 65, 94)
-    else:
-        signal_value = "NEUTRAL"
-        confidence = clamp_number(50 + abs(score) * 0.35, 50, 64)
-
+    rec_expiry = recommend_expiry_logic(atr_val, timeframe, price)
     entry = next_entry(timeframe)
 
     return {
         "app": "TRADING MASTER",
-        "market_type": market_upper,
+        "market_type": market_type.upper(),
+        "source": "cache" if market_type.upper() == "OTC" else "twelvedata",
         "symbol": symbol,
         "timeframe": timeframe,
-        "signal": signal_value,
-        "confidence": round(confidence, 2),
-        "score": score,
+        "signal": signal_val,
+        "confidence": round(conf, 2),
+        "score": round(score, 2),
+        "recommended_expiry": rec_expiry,
         "entry_time": entry["entry_time"],
         "expiry_time": entry["expiry_time"],
         "countdown_seconds": entry["countdown_seconds"],
-        "timezone": entry["timezone"],
-        "price": close,
+        "price": price,
+        "features": [round(float(f), 6) for f in features],
         "indicators": {
-            "ema9": round(ema9_value, 6),
-            "ema21": round(ema21_value, 6),
-            "rsi": round(rsi_value, 2),
-            "macd": round(macd_value["macd"], 6),
-            "macd_signal": round(macd_value["signal"], 6),
-            "macd_histogram": round(macd_value["histogram"], 6),
+            "rsi": round(rsi_val, 2),
+            "adx": round(adx_val, 2),
+            "atr": round(atr_val, 6),
+            "macd_histogram": round(macd_res["histogram"], 6),
         },
         "strategy": {
-            "name": "TRADING MASTER AI v1.0",
-            "indicators_used": [
-                "EMA 9",
-                "EMA 21",
-                "RSI 14",
-                "MACD 12/26/9",
-                "Candle Body",
-                "Volatility Filter",
-                "Momentum 3/5",
-                "Mini Breakout",
-            ],
-            "market_type": market_upper,
-            "timeframe": timeframe,
+            "name": "TRADING MASTER AI PRO",
+            "indicators_used": ["EMA 9/21/50", "RSI 14", "MACD", "ATR", "ADX", "100+ Patterns"],
+            "detected_patterns": [p["name"] for p in found_pats],
+            "detected_blends": [b["name"] for b in found_blends],
         },
+        "reason": reasons if reasons else ["No strong setup found."],
         "chart": {
-            "closes": [round(x, 6) for x in closes[-50:]],
-            "opens": [round(x, 6) for x in opens[-50:]],
-            "highs": [round(x, 6) for x in highs[-50:]],
-            "lows": [round(x, 6) for x in lows[-50:]],
+            "closes": closes[-50:],
+            "opens": opens[-50:],
+            "highs": highs[-50:],
+            "lows": lows[-50:],
         },
-        "reason": reasons,
         "disclaimer": "Signals are analysis only, not guaranteed financial advice.",
     }
 
 
 # ============================================================
-# ROUTES
+# FUTURE SIGNAL HELPERS
 # ============================================================
-
-@app.get("/")
-async def root():
-    return {
-        "app": "TRADING MASTER API",
-        "status": "running",
-        "real_market": "TwelveData",
-        "otc_market": "Quotex adapter",
-        "chart_analyzer": "Gemini",
-    }
-
-
-@app.get("/health")
-async def health():
-    return {
-        "status": "ok",
-        "time": datetime.now(timezone.utc).isoformat(),
-    }
-
-
-@app.get("/assets")
-async def assets(market_type: str = Query("real")):
-    if market_type.lower() == "otc":
-        return {
-            "market_type": "OTC",
-            "assets": OTC_ASSETS,
-        }
-
-    return {
-        "market_type": "REAL",
-        "assets": REAL_ASSETS,
-    }
-
-
-@app.get("/signal")
-async def signal(
-    market_type: str = Query("real"),
-    symbol: str = Query("EUR/USD"),
-    timeframe: str = Query("1m"),
-):
-    market_type = market_type.lower()
-
-    try:
-        print(f"DEBUG: Processing {market_type} signal for {symbol} ({timeframe})")
-        if market_type == "otc":
-            candles = await get_quotex_candles(
-                asset=symbol,
-                timeframe=timeframe,
-                outputsize=120,
-            )
-            print(f"DEBUG: Successfully got candles. Analyzing...")
-            return analyze(candles, "OTC", symbol, timeframe)
-
-
-        print(f"DEBUG: Fetching REAL candles for {symbol}...")
-        candles = await get_twelvedata_candles(symbol, timeframe)
-        print(f"DEBUG: Fetched {len(candles)} REAL candles. Analyzing...")
-        return analyze(candles, "REAL", symbol, timeframe)
-
-    except Exception as e:
-        print(f"ERROR in signal route: {e}")
-        import traceback
-        traceback.print_exc()
-        # Return a neutral response with the error message so the app doesn't crash
-        return neutral_response(
-            market_type.upper(),
-            symbol,
-            timeframe,
-            f"Backend Internal Error: {str(e)}"
-        )
-
-
-@app.get("/future-signal")
-async def future_signal(
-    market_type: str = Query("real"),
-    symbol: str = Query("EUR/USD"),
-):
-    return await signal(market_type=market_type, symbol=symbol, timeframe="1m")
-
 
 def get_future_entry_for_index(index: int, start_after_minutes: int = 1):
     now = datetime.now(timezone.utc)
@@ -1109,14 +916,8 @@ def get_future_entry_for_index(index: int, start_after_minutes: int = 1):
     }
 
 
-def build_future_sequence(
-    base_result: dict,
-    symbol: str,
-    market_type: str,
-    count: int,
-    start_after_minutes: int,
-):
-    base_score = int(base_result.get("score", 0))
+def build_future_sequence(base_result: dict, symbol: str, market_type: str, count: int, start_after_minutes: int):
+    base_score = float(base_result.get("score", 0))
     base_confidence = float(base_result.get("confidence", 50))
 
     market_upper = market_type.upper()
@@ -1158,7 +959,7 @@ def build_future_sequence(
                 "entry_in_text": entry["entry_in_text"],
                 "duration": "1 min",
                 "status": "PENDING",
-                "score": score,
+                "score": round(score, 2),
                 "reason": base_result.get("reason", []),
             }
         )
@@ -1166,277 +967,8 @@ def build_future_sequence(
     return signals
 
 
-@app.get("/future-sequence")
-async def future_sequence(
-    market_type: str = Query("real"),
-    symbol: str = Query("EUR/USD"),
-    count: int = Query(10),
-    start_after_minutes: int = Query(1),
-):
-    if count < 1:
-        count = 1
-
-    if count > 20:
-        count = 20
-
-    market_type = market_type.lower()
-
-    try:
-        if market_type == "otc":
-            candles = await get_quotex_candles(asset=symbol, timeframe="1m", outputsize=120)
-            base_result = analyze(candles, "OTC", symbol, "1m")
-            signals = build_future_sequence(base_result, symbol, "OTC", count, start_after_minutes)
-
-            return {
-                "app": "TRADING MASTER",
-                "market_type": "OTC",
-                "symbol": symbol,
-                "count": len(signals),
-                "duration": "1 min",
-                "signals": signals,
-                "disclaimer": "Signals are analysis only, not guaranteed financial advice.",
-            }
-
-        candles = await get_twelvedata_candles(symbol, "1m")
-        base_result = analyze(candles, "REAL", symbol, "1m")
-        signals = build_future_sequence(base_result, symbol, "REAL", count, start_after_minutes)
-
-        return {
-            "app": "TRADING MASTER",
-            "market_type": "REAL",
-            "symbol": symbol,
-            "count": len(signals),
-            "duration": "1 min",
-            "signals": signals,
-            "disclaimer": "Signals are analysis only, not guaranteed financial advice.",
-        }
-
-    except Exception as e:
-        return {
-            "app": "TRADING MASTER",
-            "market_type": market_type.upper(),
-            "symbol": symbol,
-            "count": 0,
-            "signals": [],
-            "message": str(e),
-            "disclaimer": "Signals are analysis only, not guaranteed financial advice.",
-        }
-
-
 # ============================================================
-# QUOTEX DEBUG
-# ============================================================
-
-def safe_preview_item(item):
-    try:
-        if isinstance(item, dict):
-            return item
-        if hasattr(item, "model_dump"):
-            return item.model_dump()
-        if hasattr(item, "dict"):
-            return item.dict()
-        if hasattr(item, "__dict__"):
-            return item.__dict__
-        return str(item)
-    except Exception:
-        return str(item)
-
-
-@app.get("/quotex-test")
-async def quotex_test(symbol: str = Query("USDBRL_otc"), timeframe: str = Query("1m")):
-    try:
-        candles = await get_quotex_candles(asset=symbol, timeframe=timeframe, outputsize=50)
-
-        return {
-            "ok": True,
-            "symbol": symbol,
-            "timeframe": timeframe,
-            "count": len(candles),
-            "sample": candles[-3:],
-        }
-
-    except Exception as e:
-        return {
-            "ok": False,
-            "error": str(e),
-            "error_repr": repr(e),
-            "error_type": type(e).__name__,
-        }
-
-
-@app.get("/debug-otc")
-async def debug_otc(symbol: str = Query("USDBRL_otc"), timeframe: str = Query("1m")):
-    try:
-        candles = await get_quotex_candles(asset=symbol, timeframe=timeframe, outputsize=120)
-
-        closes = [float(c["close"]) for c in candles]
-        opens = [float(c["open"]) for c in candles]
-        highs = [float(c["high"]) for c in candles]
-        lows = [float(c["low"]) for c in candles]
-
-        ranges = [highs[i] - lows[i] for i in range(len(candles))]
-        bodies = [abs(closes[i] - opens[i]) for i in range(len(candles))]
-
-        flat_candles = 0
-
-        for c in candles:
-            if float(c["open"]) == float(c["high"]) == float(c["low"]) == float(c["close"]):
-                flat_candles += 1
-
-        analysis = analyze(candles, "OTC", symbol, timeframe)
-
-        return {
-            "ok": True,
-            "symbol": symbol,
-            "timeframe": timeframe,
-            "candle_count": len(candles),
-            "first_candle": candles[0],
-            "last_candle": candles[-1],
-            "last_10_candles": candles[-10:],
-            "unique_counts": {
-                "opens": len(set(round(c, 10) for c in opens)),
-                "highs": len(set(round(c, 10) for c in highs)),
-                "lows": len(set(round(c, 10) for c in lows)),
-                "closes": len(set(round(c, 10) for c in closes)),
-            },
-            "flat_candles": flat_candles,
-            "range_stats": {
-                "min_range": min(ranges),
-                "max_range": max(ranges),
-                "avg_range": sum(ranges) / len(ranges),
-                "avg_body": sum(bodies) / len(bodies),
-            },
-            "analysis": analysis,
-        }
-
-    except Exception as e:
-        return {
-            "ok": False,
-            "error": str(e),
-            "error_repr": repr(e),
-            "error_type": type(e).__name__,
-        }
-
-
-@app.get("/quotex-raw")
-async def quotex_raw(
-    symbol: str = Query("USDBRL_otc"),
-    timeframe: str = Query("1m"),
-    count: int = Query(5),
-):
-    try:
-        from api_quotex import AsyncQuotexClient
-
-        is_demo = quotex_is_demo()
-        ssid = await quotex_get_ssid(is_demo)
-
-        asset = normalize_quotex_asset(symbol)
-        period = quotex_timeframe_seconds(timeframe)
-
-        client = AsyncQuotexClient(ssid=ssid, is_demo=is_demo)
-
-        try:
-            connected = client.connect()
-            connected = await quotex_maybe_await(connected)
-
-            if connected is False:
-                raise Exception("Could not connect to Quotex websocket")
-
-            raw = client.get_candles(asset=asset, timeframe=period, count=count)
-            raw = await quotex_maybe_await(raw)
-
-            if isinstance(raw, list):
-                preview = [safe_preview_item(x) for x in raw[:count]]
-            else:
-                preview = safe_preview_item(raw)
-
-            parsed = parse_quotex_candles(raw, outputsize=count)
-
-            return {
-                "ok": True,
-                "symbol": symbol,
-                "asset_used": asset,
-                "timeframe": timeframe,
-                "period": period,
-                "raw_type": str(type(raw)),
-                "raw_preview": preview,
-                "parsed_count": len(parsed),
-                "parsed_preview": parsed,
-            }
-
-        finally:
-            try:
-                result = client.disconnect()
-                await quotex_maybe_await(result)
-            except Exception:
-                pass
-
-    except Exception as e:
-        return {
-            "ok": False,
-            "error": str(e),
-            "error_repr": repr(e),
-            "error_type": type(e).__name__,
-        }
-
-
-@app.get("/quotex-live-assets")
-async def quotex_live_assets():
-    try:
-        from api_quotex import AsyncQuotexClient
-
-        is_demo = quotex_is_demo()
-        ssid = await quotex_get_ssid(is_demo)
-
-        client = AsyncQuotexClient(ssid=ssid, is_demo=is_demo)
-
-        try:
-            connected = client.connect()
-            connected = await quotex_maybe_await(connected)
-
-            if connected is False:
-                raise Exception("Could not connect to Quotex websocket")
-
-            assets_result = None
-            payouts_result = None
-
-            if hasattr(client, "get_available_assets"):
-                assets_result = client.get_available_assets()
-                assets_result = await quotex_maybe_await(assets_result)
-
-            if hasattr(client, "get_assets_and_payouts"):
-                payouts_result = client.get_assets_and_payouts()
-                payouts_result = await quotex_maybe_await(payouts_result)
-
-            asset_keys = list(assets_result.keys())[:100] if isinstance(assets_result, dict) else []
-            payout_keys = list(payouts_result.keys())[:100] if isinstance(payouts_result, dict) else []
-
-            return {
-                "ok": True,
-                "assets_type": str(type(assets_result)),
-                "payouts_type": str(type(payouts_result)),
-                "asset_sample": asset_keys,
-                "payout_sample": payout_keys,
-            }
-
-        finally:
-            try:
-                result = client.disconnect()
-                await quotex_maybe_await(result)
-            except Exception:
-                pass
-
-    except Exception as e:
-        return {
-            "ok": False,
-            "error": str(e),
-            "error_repr": repr(e),
-            "error_type": type(e).__name__,
-        }
-
-
-# ============================================================
-# GEMINI CHART ANALYZER
+# GEMINI / CHART ANALYZER
 # ============================================================
 
 def detect_mime_type(filename: Optional[str], content_type: Optional[str]) -> str:
@@ -1444,13 +976,10 @@ def detect_mime_type(filename: Optional[str], content_type: Optional[str]) -> st
         return content_type
 
     name = (filename or "").lower()
-
     if name.endswith(".jpg") or name.endswith(".jpeg"):
         return "image/jpeg"
-
     if name.endswith(".webp"):
         return "image/webp"
-
     return "image/png"
 
 
@@ -1461,7 +990,6 @@ def extract_json_from_text(text: str):
         pass
 
     match = re.search(r"\{.*\}", text, re.DOTALL)
-
     if not match:
         return None
 
@@ -1473,13 +1001,10 @@ def extract_json_from_text(text: str):
 
 def normalize_chart_signal(value: Any) -> str:
     s = str(value or "").strip().upper()
-
     if s in ["CALL", "BUY", "UP", "LONG", "BULLISH"]:
         return "CALL"
-
     if s in ["PUT", "SELL", "DOWN", "SHORT", "BEARISH"]:
         return "PUT"
-
     return "NEUTRAL"
 
 
@@ -1488,17 +1013,14 @@ def normalize_confidence(value: Any) -> float:
         number = float(value)
     except Exception:
         number = 0
-
     return clamp_number(number, 0, 95)
 
 
 def normalize_reasons(value: Any) -> List[str]:
     if isinstance(value, list):
         return [str(x) for x in value]
-
     if isinstance(value, str):
         return [value]
-
     return []
 
 
@@ -1541,6 +1063,284 @@ def get_gemini_candidates(genai):
     return candidates
 
 
+# ============================================================
+# ROUTES
+# ============================================================
+
+@app.get("/")
+async def root():
+    return {
+        "app": "TRADING MASTER API",
+        "status": "running",
+        "real_market": "TwelveData",
+        "otc_market": "Memory Cache",
+        "chart_analyzer": "Gemini",
+    }
+
+
+@app.get("/health")
+async def health():
+    return {
+        "status": "ok",
+        "time": datetime.now(timezone.utc).isoformat(),
+    }
+
+
+@app.get("/assets")
+async def assets(market_type: str = Query("real")):
+    if market_type.lower() == "otc":
+        return {"market_type": "OTC", "assets": OTC_ASSETS}
+    return {"market_type": "REAL", "assets": REAL_ASSETS}
+
+
+@app.get("/signal")
+async def signal(
+    market_type: str = Query("real"),
+    symbol: str = Query("EUR/USD"),
+    timeframe: str = Query("1m"),
+):
+    market_type = market_type.lower().strip()
+
+    try:
+        candles = await fetch_candles_for_market(
+            market_type=market_type,
+            symbol=symbol,
+            timeframe=timeframe,
+            outputsize=120,
+        )
+        return analyze(candles, market_type.upper(), symbol, timeframe)
+
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return neutral_response(
+            market_type.upper(),
+            symbol,
+            timeframe,
+            f"Backend Internal Error: {str(e)}"
+        )
+
+
+@app.get("/future-signal")
+async def future_signal(
+    market_type: str = Query("real"),
+    symbol: str = Query("EUR/USD"),
+):
+    return await signal(market_type=market_type, symbol=symbol, timeframe="1m")
+
+
+@app.get("/future-sequence")
+async def future_sequence(
+    market_type: str = Query("real"),
+    symbol: str = Query("EUR/USD"),
+    count: int = Query(10),
+    start_after_minutes: int = Query(1),
+):
+    if count < 1:
+        count = 1
+    if count > 20:
+        count = 20
+
+    market_type = market_type.lower().strip()
+
+    try:
+        candles = await fetch_candles_for_market(
+            market_type=market_type,
+            symbol=symbol,
+            timeframe="1m",
+            outputsize=120,
+        )
+
+        base_result = analyze(candles, market_type.upper(), symbol, "1m")
+        signals = build_future_sequence(
+            base_result,
+            symbol,
+            market_type.upper(),
+            count,
+            start_after_minutes,
+        )
+
+        return {
+            "app": "TRADING MASTER",
+            "market_type": market_type.upper(),
+            "symbol": symbol,
+            "count": len(signals),
+            "duration": "1 min",
+            "signals": signals,
+            "disclaimer": "Signals are analysis only, not guaranteed financial advice.",
+        }
+
+    except Exception as e:
+        return {
+            "app": "TRADING MASTER",
+            "market_type": market_type.upper(),
+            "symbol": symbol,
+            "count": 0,
+            "signals": [],
+            "message": str(e),
+            "disclaimer": "Signals are analysis only, not guaranteed financial advice.",
+        }
+
+
+@app.post("/otc/push-candles")
+async def otc_push_candles(payload: OtcPushCandlesRequest, x_admin_token: str = Header(default="")):
+    require_admin_token(x_admin_token)
+    symbol = normalize_otc_symbol(payload.symbol)
+    timeframe = normalize_timeframe(payload.timeframe)
+
+    candles = [
+        {
+            "time": c.time,
+            "open": float(c.open),
+            "high": float(c.high),
+            "low": float(c.low),
+            "close": float(c.close),
+        }
+        for c in payload.candles
+    ]
+
+    store_otc_candles(symbol, timeframe, candles)
+
+    return {
+        "ok": True,
+        "symbol": symbol,
+        "timeframe": timeframe,
+        "stored": len(candles),
+    }
+
+
+@app.post("/otc/push-pairs")
+async def otc_push_pairs(payload: OtcPushPairsRequest, x_admin_token: str = Header(default="")):
+    require_admin_token(x_admin_token)
+
+    doc_ref = db.collection("otc_data").document("pairs")
+    doc = doc_ref.get()
+
+    current = {}
+    if doc.exists:
+        current = doc.to_dict().get("data", {})
+
+    if not current:
+        current = default_otc_pair_stats()
+
+    for item in payload.items:
+        symbol = normalize_otc_symbol(item.symbol)
+
+        current[symbol] = {
+            "label": item.label or label_for_otc_asset(symbol),
+            "symbol": symbol,
+            "profit_1m": int(item.profit_1m or 0),
+            "profit_5m": int(item.profit_5m or 0),
+            "change": float(item.change or 0.0),
+            "price": float(item.price) if item.price is not None else None,
+        }
+
+    doc_ref.set({
+        "time": datetime.now(timezone.utc).timestamp(),
+        "data": current
+    })
+
+    return {
+        "ok": True,
+        "count": len(current),
+    }
+
+
+@app.get("/quotex-pairs")
+async def quotex_pairs():
+    doc_ref = db.collection("otc_data").document("pairs")
+    doc = doc_ref.get()
+
+    if doc.exists:
+        cached = doc.to_dict()
+        data = cached.get("data", {})
+        # ensure defaults exist
+        defaults = default_otc_pair_stats()
+        for k, v in defaults.items():
+            if k not in data:
+                data[k] = v
+
+        return {
+            "ok": True,
+            "count": len(data),
+            "data": data,
+            "updated_at": cached.get("time"),
+        }
+
+    return {
+        "ok": True,
+        "count": len(OTC_ASSETS),
+        "data": default_otc_pair_stats(),
+        "updated_at": None,
+    }
+
+
+@app.get("/quotex-warmup")
+async def quotex_warmup():
+    # Warmup logic can be simplified as we use Firestore now
+    return {
+        "ok": True,
+        "mode": "firestore",
+    }
+
+
+@app.get("/quotex-test")
+async def quotex_test(symbol: str = Query("USDBRL_otc"), timeframe: str = Query("1m")):
+    try:
+        candles = get_cached_otc_candles(symbol, timeframe, min_count=1)
+        return {
+            "ok": True,
+            "symbol": normalize_otc_symbol(symbol),
+            "timeframe": normalize_timeframe(timeframe),
+            "count": len(candles),
+            "sample": candles[-3:],
+        }
+    except Exception as e:
+        return {
+            "ok": False,
+            "error": str(e),
+            "error_type": type(e).__name__,
+        }
+
+
+@app.get("/debug-otc")
+async def debug_otc(symbol: str = Query("USDBRL_otc"), timeframe: str = Query("1m")):
+    try:
+        candles = get_cached_otc_candles(symbol, timeframe, min_count=1)
+
+        closes = [float(c["close"]) for c in candles]
+        opens = [float(c["open"]) for c in candles]
+        highs = [float(c["high"]) for c in candles]
+        lows = [float(c["low"]) for c in candles]
+        ranges = [highs[i] - lows[i] for i in range(len(candles))]
+        bodies = [abs(closes[i] - opens[i]) for i in range(len(candles))]
+
+        analysis = analyze(candles, "OTC", symbol, timeframe)
+
+        return {
+            "ok": True,
+            "symbol": normalize_otc_symbol(symbol),
+            "timeframe": normalize_timeframe(timeframe),
+            "candle_count": len(candles),
+            "first_candle": candles[0],
+            "last_candle": candles[-1],
+            "last_10_candles": candles[-10:],
+            "range_stats": {
+                "min_range": min(ranges) if ranges else 0,
+                "max_range": max(ranges) if ranges else 0,
+                "avg_range": (sum(ranges) / len(ranges)) if ranges else 0,
+                "avg_body": (sum(bodies) / len(bodies)) if bodies else 0,
+            },
+            "analysis": analysis,
+        }
+    except Exception as e:
+        return {
+            "ok": False,
+            "error": str(e),
+            "error_type": type(e).__name__,
+        }
+
+
 @app.get("/gemini-models")
 async def gemini_models():
     gemini_key = os.getenv("GEMINI_API_KEY")
@@ -1558,23 +1358,15 @@ async def gemini_models():
         genai.configure(api_key=gemini_key)
 
         models = []
-
         for model in genai.list_models():
             methods = getattr(model, "supported_generation_methods", [])
             if "generateContent" in methods:
                 models.append(model.name)
 
-        return {
-            "ok": True,
-            "models": models,
-        }
+        return {"ok": True, "models": models}
 
     except Exception as e:
-        return {
-            "ok": False,
-            "message": str(e),
-            "models": [],
-        }
+        return {"ok": False, "message": str(e), "models": []}
 
 
 @app.post("/chart-analyze")
@@ -1584,7 +1376,6 @@ async def chart_analyze(
     timeframe: str = Query("1m"),
 ):
     contents = await file.read()
-
     max_size = 5 * 1024 * 1024
 
     if len(contents) > max_size:
@@ -1727,167 +1518,139 @@ Rules:
             "reasons": [str(e)],
             "disclaimer": "Signals are analysis only, not guaranteed financial advice.",
         }
-        # ============================================================
-# QUOTEX LIVE PAIR STATS
-# ============================================================
-
-QUOTEX_PAIR_STATS_CACHE = {
-    "time": None,
-    "data": {},
-}
-
-QUOTEX_PAIR_STATS_TTL_SECONDS = 30
 
 
-def calc_change_percent(candles):
-    try:
-        if not candles or len(candles) < 2:
-            return 0.0, None
+@app.get("/admin/otc", response_class=HTMLResponse)
+async def otc_admin_page():
+    return """
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>OTC Admin Panel</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#0b0f14; color:#fff; padding:20px; }
+    .card { background:#141b27; padding:20px; border-radius:16px; margin-bottom:20px; }
+    input, textarea, button, select {
+      width:100%; padding:10px; margin-top:8px; margin-bottom:12px;
+      border-radius:8px; border:none;
+    }
+    textarea { min-height:180px; }
+    button { background:#19D9E6; color:#000; font-weight:bold; cursor:pointer; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    pre { background:#000; padding:12px; border-radius:8px; overflow:auto; }
+  </style>
+</head>
+<body>
+  <h1>OTC Admin Panel</h1>
 
-        first = float(candles[0]["close"])
-        last = float(candles[-1]["close"])
+  <div class="card">
+    <label>Admin Token</label>
+    <input id="token" placeholder="Enter ADMIN_TOKEN" />
+  </div>
 
-        if first == 0:
-            return 0.0, last
+  <div class="card">
+    <h2>Push Pair Stat</h2>
+    <input id="pair_symbol" placeholder="Symbol e.g. EURUSD_otc" />
+    <input id="pair_label" placeholder="Label e.g. EUR/USD (OTC)" />
+    <div class="row">
+      <input id="pair_profit_1m" type="number" placeholder="1m payout %" />
+      <input id="pair_profit_5m" type="number" placeholder="5m payout %" />
+    </div>
+    <div class="row">
+      <input id="pair_change" type="number" step="0.01" placeholder="Change %" />
+      <input id="pair_price" type="number" step="0.000001" placeholder="Current price" />
+    </div>
+    <button onclick="pushPair()">Push Pair Stat</button>
+  </div>
 
-        change = ((last - first) / first) * 100.0
-        return round(change, 2), last
-    except Exception:
-        return 0.0, None
+  <div class="card">
+    <h2>Push Candles JSON</h2>
+    <input id="candle_symbol" placeholder="Symbol e.g. EURUSD_otc" />
+    <select id="candle_timeframe">
+      <option value="1m">1m</option>
+      <option value="5m">5m</option>
+    </select>
+    <textarea id="candles_json">[
+  {
+    "time": "2026-07-01T10:15:00Z",
+    "open": 1.1001,
+    "high": 1.1008,
+    "low": 1.0997,
+    "close": 1.1005
+  }
+]</textarea>
+    <button onclick="pushCandles()">Push Candles</button>
+  </div>
 
+  <div class="card">
+    <h2>Quick Links</h2>
+    <button onclick="openPairs()">Open /quotex-pairs</button>
+    <button onclick="openSignalTest()">Open /signal test</button>
+  </div>
 
-def label_for_quotex_asset(asset_symbol: str) -> str:
-    for label, actual in QUOTEX_ALIAS_MAP.items():
-        if actual == asset_symbol:
-            return label
+  <div class="card">
+    <h2>Response</h2>
+    <pre id="out">Ready.</pre>
+  </div>
 
-    return asset_symbol
+  <script>
+    function tokenHeader() {
+      return {
+        "Content-Type": "application/json",
+        "X-Admin-Token": document.getElementById("token").value
+      };
+    }
 
+    async function pushPair() {
+      const payload = {
+        items: [
+          {
+            symbol: document.getElementById("pair_symbol").value,
+            label: document.getElementById("pair_label").value,
+            profit_1m: parseInt(document.getElementById("pair_profit_1m").value || "0"),
+            profit_5m: parseInt(document.getElementById("pair_profit_5m").value || "0"),
+            change: parseFloat(document.getElementById("pair_change").value || "0"),
+            price: parseFloat(document.getElementById("pair_price").value || "0")
+          }
+        ]
+      };
 
-async def get_quotex_pair_stats():
+      const r = await fetch("/otc/push-pairs", {
+        method: "POST",
+        headers: tokenHeader(),
+        body: JSON.stringify(payload)
+      });
+      const data = await r.json();
+      document.getElementById("out").textContent = JSON.stringify(data, null, 2);
+    }
+
+    async function pushCandles() {
+      const candles = JSON.parse(document.getElementById("candles_json").value);
+      const payload = {
+        symbol: document.getElementById("candle_symbol").value,
+        timeframe: document.getElementById("candle_timeframe").value,
+        candles: candles
+      };
+
+      const r = await fetch("/otc/push-candles", {
+        method: "POST",
+        headers: tokenHeader(),
+        body: JSON.stringify(payload)
+      });
+      const data = await r.json();
+      document.getElementById("out").textContent = JSON.stringify(data, null, 2);
+    }
+
+    function openPairs() {
+      window.open("/quotex-pairs", "_blank");
+    }
+
+    function openSignalTest() {
+      const s = document.getElementById("candle_symbol").value || "EURUSD_otc";
+      window.open(`/signal?market_type=otc&symbol=${encodeURIComponent(s)}&timeframe=1m`, "_blank");
+    }
+  </script>
+</body>
+</html>
     """
-    Returns live OTC stats:
-    - 1m payout
-    - 5m payout
-    - current change percentage
-    - last price
-    """
-
-    now_ts = datetime.now(timezone.utc).timestamp()
-
-    if (
-        QUOTEX_PAIR_STATS_CACHE["time"]
-        and now_ts - QUOTEX_PAIR_STATS_CACHE["time"] < QUOTEX_PAIR_STATS_TTL_SECONDS
-        and QUOTEX_PAIR_STATS_CACHE["data"]
-    ):
-        return QUOTEX_PAIR_STATS_CACHE["data"]
-
-    if os.getenv("QUOTEX_ENABLED", "false").lower() != "true":
-        raise Exception("QUOTEX_ENABLED is not true in .env")
-
-    from api_quotex import AsyncQuotexClient
-
-    is_demo = quotex_is_demo()
-    ssid = await quotex_get_ssid(is_demo)
-
-    client = AsyncQuotexClient(ssid=ssid, is_demo=is_demo)
-
-    output = {}
-
-    try:
-        connected = client.connect()
-        connected = await quotex_maybe_await(connected)
-
-        if connected is False:
-            raise Exception("Could not connect to Quotex websocket")
-
-        payouts_map = {}
-        live_assets_map = {}
-
-        if hasattr(client, "get_assets_and_payouts"):
-            payouts_result = client.get_assets_and_payouts()
-            payouts_result = await quotex_maybe_await(payouts_result)
-
-            if isinstance(payouts_result, dict):
-                payouts_map = payouts_result
-
-        if hasattr(client, "get_available_assets"):
-            assets_result = client.get_available_assets()
-            assets_result = await quotex_maybe_await(assets_result)
-
-            if isinstance(assets_result, dict):
-                live_assets_map = assets_result
-
-        # Build pair list from your OTC asset list.
-        for asset_symbol in OTC_ASSETS:
-            entry = {
-                "label": label_for_quotex_asset(asset_symbol),
-                "symbol": asset_symbol,
-                "profit_1m": None,
-                "profit_5m": None,
-                "change": 0.0,
-                "price": None,
-            }
-
-            # Payouts
-            payout_value = None
-
-            for key, value in payouts_map.items():
-                if str(key).lower() == asset_symbol.lower():
-                    payout_value = value
-                    break
-
-            if isinstance(payout_value, dict):
-                entry["profit_1m"] = payout_value.get("1m") or payout_value.get("60")
-                entry["profit_5m"] = payout_value.get("5m") or payout_value.get("300")
-            elif isinstance(payout_value, (int, float)):
-                entry["profit_1m"] = int(payout_value)
-                entry["profit_5m"] = int(payout_value)
-
-            # 1m change
-            try:
-                raw = client.get_candles(
-                    asset=asset_symbol,
-                    timeframe=60,
-                    count=30,
-                )
-                raw = await quotex_maybe_await(raw)
-                candles = parse_quotex_candles(raw, outputsize=30)
-
-                change, last_price = calc_change_percent(candles)
-                entry["change"] = change
-                entry["price"] = last_price
-            except Exception:
-                pass
-
-            output[asset_symbol] = entry
-
-        QUOTEX_PAIR_STATS_CACHE["time"] = now_ts
-        QUOTEX_PAIR_STATS_CACHE["data"] = output
-
-        return output
-
-    finally:
-        try:
-            result = client.disconnect()
-            await quotex_maybe_await(result)
-        except Exception:
-            pass
-
-
-@app.get("/quotex-pairs")
-async def quotex_pairs():
-    try:
-        stats = await get_quotex_pair_stats()
-        return {
-            "ok": True,
-            "count": len(stats),
-            "data": stats,
-        }
-    except Exception as e:
-        return {
-            "ok": False,
-            "error": str(e),
-            "error_repr": repr(e),
-            "error_type": type(e).__name__,
-        }
